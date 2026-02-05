@@ -6,8 +6,7 @@
   <title>Lista compra (local)</title>
   <link rel="stylesheet" href="assets/app.css" />
   <link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#ffffff">
-
+  <meta name="theme-color" content="#ffffff">
 </head>
 <body>
   <div class="app">
@@ -22,11 +21,11 @@
         <button class="tab" id="tabSuper" type="button">Modo súper</button>
       </div>
 
+      <!-- Botones SIN dictado -->
       <div class="actionsBar">
-        <button class="btn primary" id="btnMic" type="button">🎤 Dictar</button>
-        <button class="btn" id="btnReset" type="button">Reset</button>
-        <button class="btn" id="btnAdd" type="button">Añadir</button>
-        <button class="btn" id="btnHistory" type="button">Historial</button>
+        <button class="btn icon reset" id="btnReset" type="button">🧹 Reset</button>
+        <button class="btn icon add" id="btnAdd" type="button">➕ Añadir</button>
+        <button class="btn icon history" id="btnHistory" type="button">🧾 Historial</button>
       </div>
 
       <input class="search" id="search" type="text" placeholder="Buscar…" />
@@ -40,7 +39,7 @@
 
       <!-- Botón finalizar (solo en modo súper) -->
       <div id="finishRow" style="display:none; margin-bottom:12px;">
-        <button class="btn primary" id="btnFinish" type="button" style="width:100%;">Finalizar compra</button>
+        <button class="btn primary" id="btnFinish" type="button" style="width:100%;">✅ Finalizar compra</button>
       </div>
 
       <div class="card">
@@ -49,30 +48,29 @@
     </div>
   </div>
 
- <!-- Modal Añadir -->
-<div id="addModal" class="modalBack" style="display:none;">
-  <div class="modal">
-    <div class="modalHeader">
-      <div>Añadir producto</div>
-      <button class="btn" id="btnCloseAdd" type="button">Cerrar</button>
-    </div>
+  <!-- Modal Añadir -->
+  <div id="addModal" class="modalBack" style="display:none;">
+    <div class="modal">
+      <div class="modalHeader">
+        <div>Añadir producto</div>
+        <button class="btn" id="btnCloseAdd" type="button">Cerrar</button>
+      </div>
 
-    <div class="twoCols" style="margin-top:12px;">
-      <input class="search" id="addName" type="text" placeholder="Ej. peras" autocomplete="off" />
-      <input class="search" id="addQty" type="number" min="1" step="1" value="1" />
-    </div>
+      <div class="twoCols" style="margin-top:12px;">
+        <input class="search" id="addName" type="text" placeholder="Ej. peras" autocomplete="off" />
+        <input class="search" id="addQty" type="number" min="1" step="1" value="1" />
+      </div>
 
-    <div class="twoCols" style="margin-top:10px;">
-      <input class="search" id="addPrice" type="number" step="0.01" min="0" placeholder="Precio (opcional) ej. 2.25" />
-      <button class="btn primary" id="btnSaveAdd" type="button">Guardar y marcar</button>
-    </div>
+      <div class="twoCols" style="margin-top:10px;">
+        <input class="search" id="addPrice" type="number" step="0.01" min="0" placeholder="Precio (opcional) ej. 2.25" />
+        <button class="btn primary" id="btnSaveAdd" type="button">Guardar y marcar</button>
+      </div>
 
-    <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
-      Si pones cantidad y precio, se marca directamente y se suma al total del modo súper.
+      <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
+        Si pones cantidad y precio, se marca directamente y se suma al total del modo súper.
+      </div>
     </div>
   </div>
-</div>
-
 
   <!-- Modal Precio -->
   <div id="priceModal" class="modalBack" style="display:none;">
@@ -115,13 +113,15 @@
 
   <script src="assets/db.js"></script>
   <script src="assets/app.js"></script>
+
   <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      //navigator.serviceWorker.register("./sw.js").catch(console.error);
-    });
-  }
-</script>
+    // Si ya lo tienes funcionando, déjalo así.
+    // Si quieres activar SW desde aquí: descomenta.
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        // navigator.serviceWorker.register("./sw.js").catch(console.error);
+      });
+    }
+  </script>
 </body>
 </html>
-
