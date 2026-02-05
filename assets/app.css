@@ -518,3 +518,11 @@ body.mode-catalog .meta.added .pill{
   font-weight:900;
   font-size:12px;
 }
+
+body.mode-catalog .item.selected{
+  background:#f3f4f6;
+}
+body.mode-catalog .name.checked{
+  opacity:1 !important;
+  text-decoration:none !important;
+}
