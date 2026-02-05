@@ -34,6 +34,9 @@ body{
   padding-bottom:84px; /* espacio para footer sticky */
 }
 
+/* =========================
+   TOPBAR
+   ========================= */
 .topbar{
   position: sticky;
   top: 0;
@@ -41,7 +44,15 @@ body{
   background: rgba(255,255,255,.92);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
-  padding:16px 16px 12px;
+  padding:14px 16px 10px;
+  transition: transform .22s ease, opacity .22s ease;
+  will-change: transform;
+}
+
+/* Auto-hide topbar (JS pone body.header-hidden) */
+body.header-hidden .topbar{
+  transform: translateY(-110%);
+  opacity: .98;
 }
 
 .title h1{
@@ -49,32 +60,109 @@ body{
   font-size: 18px;
   letter-spacing: .2px;
 }
+
 .badge{
   margin-top: 6px;
   font-size: 12px;
   color:var(--muted);
 }
+.badge:empty{display:none}
 
+/* Título centrado (si lo usas en el HTML) */
+.appTitle{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:2px;
+}
+.appName{
+  font-size:20px;
+  font-weight:1000;
+  letter-spacing:.2px;
+}
+.appSubtitle{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+body.mode-super .appSubtitle{display:none}
+body.mode-super .appName{font-size:17px}
+
+/* =========================
+   TABS (Catálogo / Comprar)
+   ========================= */
 .tabs{
   display:flex;
   gap:10px;
   margin-top:10px;
+  align-items:stretch;
 }
+
 .tab{
-  flex:1;
   border:1px solid var(--line);
   background:var(--pill);
   padding:10px 12px;
-  border-radius:12px;
-  font-weight:700;
+  border-radius:14px;
+  font-weight:900;
   cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease, background .15s ease;
 }
+
 .tab.on{
-  background:#111;
-  color:#fff;
   border-color:#111;
 }
 
+/* CATÁLOGO → secundario */
+#tabCatalogo{
+  flex: .8;
+  font-size:14px;
+  opacity:.72;
+  background:#f6f7f9;
+}
+#tabCatalogo.on{
+  opacity:.95;
+  background:#e5e7eb;
+  color:#111;
+  border-color:#d1d5db;
+  box-shadow:none;
+  transform:none;
+}
+
+/* “SUPER” → protagonista (más grande + más visible) */
+#tabSuper{
+  flex: 1.35;
+  font-size:16px;
+  letter-spacing:.2px;
+  background: linear-gradient(90deg,#111 0%, #1f2937 100%);
+  color:#fff;
+  border-color:#111;
+  box-shadow: 0 10px 26px rgba(0,0,0,.18);
+}
+#tabSuper:not(.on){
+  opacity:.92;
+}
+#tabSuper.on{
+  opacity:1;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.22);
+}
+
+/* Móvil: súper aún más “botón principal” */
+@media (max-width: 520px){
+  #tabCatalogo{
+    font-size:13px;
+    padding:8px 10px;
+  }
+  #tabSuper{
+    font-size:15px;
+    padding:12px 14px;
+  }
+}
+
+/* =========================
+   ACTIONS (Catálogo)
+   ========================= */
 .actionsBar{
   display:flex;
   gap:10px;
@@ -87,7 +175,7 @@ body{
   color:#111;
   padding:10px 12px;
   border-radius:12px;
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
 }
 .btn:active{ transform: translateY(1px); }
@@ -100,8 +188,9 @@ body{
 
 .btn.ghost{
   background:#fff;
-  color:#111;
-  border-color:var(--line);
+  border-color:#e6e8ee;
+  color:#444;
+  font-weight:800;
 }
 
 .btn.icon{
@@ -128,6 +217,24 @@ body{
   color:var(--purple-tx);
 }
 
+/* Móvil: acciones en 2 columnas y botones grandes */
+@media (max-width: 520px){
+  .actionsBar{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .actionsBar .btn{
+    width:100%;
+    justify-content:center;
+    text-align:center;
+  }
+}
+
+/* =========================
+   SEARCH
+   ========================= */
 .search{
   width:100%;
   margin-top:12px;
@@ -139,27 +246,9 @@ body{
   background:#fff;
 }
 
-/* Tools modo super */
-.superTools{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-.chip{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:999px;
-  font-weight:800;
-  font-size:12px;
-  color:#111;
-}
-.chip input{ width:16px; height:16px; }
-
+/* =========================
+   CONTENT / TOTAL BOX
+   ========================= */
 .content{ padding:12px 16px 0; }
 
 .totalBig{
@@ -175,7 +264,7 @@ body{
 .totalBig .label{
   color:var(--muted);
   font-size:12px;
-  font-weight:800;
+  font-weight:900;
 }
 .totalBig .value{
   display:block;
@@ -185,6 +274,9 @@ body{
   line-height:1.1;
 }
 
+/* =========================
+   LIST
+   ========================= */
 .card{
   background:#fff;
   border:1px solid var(--line);
@@ -204,7 +296,7 @@ body{
   border-bottom:1px solid #eef0f5;
 }
 
-/* ===== LISTA: por defecto 1 línea (catálogo compacto) ===== */
+/* Base item (catálogo compacto) */
 .item{
   display:flex;
   justify-content:space-between;
@@ -212,9 +304,8 @@ body{
   padding:12px 12px;
   border-top:1px solid #eef0f5;
   background:#fff;
-
-  flex-wrap: nowrap;         /* ✅ IMPORTANTE */
-  align-items: center;       /* ✅ IMPORTANTE */
+  flex-wrap: nowrap;
+  align-items: center;
 }
 .item:first-child{ border-top:0; }
 .item.done{
@@ -238,7 +329,8 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.name.checked{ opacity:.65; text-decoration:line-through; }
+/* Por defecto NO tachamos (lo gestionas por modo abajo) */
+.name.checked{ opacity:1; text-decoration:none; }
 
 .meta{
   color:var(--muted);
@@ -250,9 +342,8 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-
-  flex: 0 0 auto;            /* ✅ IMPORTANTE */
-  width: auto;               /* ✅ IMPORTANTE */
+  flex: 0 0 auto;
+  width: auto;
 }
 
 .priceTag{
@@ -294,7 +385,7 @@ body{
   text-align:right;
 }
 
-/* boton quitar (modo super) */
+/* botón basura (modo super) */
 .btnTiny{
   border:1px solid var(--line);
   background:#fff;
@@ -309,7 +400,99 @@ body{
   color:var(--red-tx);
 }
 
-/* ===== Modal ===== */
+/* =========================
+   CATÁLOGO: seleccionado
+   ========================= */
+body.mode-catalog .item{ padding:8px 12px; }
+body.mode-catalog .cb{ width:20px; height:20px; }
+
+body.mode-catalog .item.selected{
+  background: linear-gradient(90deg,#f0f7ff 0%,#f8fbff 100%);
+  box-shadow: inset 4px 0 0 #3b82f6;
+}
+body.mode-catalog .item:not(.selected):hover{
+  background:#fafafa;
+}
+
+/* =========================
+   MODO SÚPER: pantalla limpia
+   ========================= */
+body.mode-super .actionsBar{ display:none !important; }
+body.mode-super #search{ display:none !important; }
+body.mode-super #totalBox{ display:none !important; }
+
+/* MODO SÚPER: fila compacta, nombre 2 líneas, controles a la derecha */
+body.mode-super .item{
+  display:flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+}
+body.mode-super .left{ flex: 1 1 auto; min-width: 0; }
+body.mode-super .text{ min-width:0; }
+body.mode-super .meta{ display:none; }
+
+/* Nombre 2 líneas (más pequeño) */
+body.mode-super .name{
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 900;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Controles pegados a la derecha */
+body.mode-super .right{
+  flex: 0 0 auto;
+  width: auto;
+  margin-left: auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+/* En súper ocultamos precio unitario */
+body.mode-super .priceTag{ display:none; }
+
+/* Controles compactos */
+body.mode-super .qtyControls{ border-radius: 12px; }
+body.mode-super .qtyBtn{
+  padding: 8px 10px;
+  font-size: 16px;
+}
+body.mode-super .qtyVal{
+  padding: 8px 10px;
+  min-width: 26px;
+  font-size: 15px;
+  font-weight: 900;
+}
+body.mode-super .subtotal{
+  min-width: auto;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 900;
+}
+body.mode-super .btnTiny{
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+/* Móvil muy pequeño: deja que la derecha baje si no cabe */
+@media (max-width: 360px){
+  body.mode-super .item{ flex-wrap: wrap; }
+  body.mode-super .right{ width: 100%; justify-content:flex-end; }
+}
+
+/* =========================
+   MODALS
+   ========================= */
 .modalBack{
   position:fixed;
   inset:0;
@@ -317,9 +500,14 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:16px;
   z-index:30;
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom))
+    calc(12px + env(safe-area-inset-left));
 }
+
 .modal{
   width:100%;
   max-width:520px;
@@ -328,6 +516,7 @@ body{
   border:1px solid var(--line);
   padding:14px;
 }
+
 .modalHeader{
   display:flex;
   justify-content:space-between;
@@ -335,19 +524,29 @@ body{
   gap:10px;
   font-weight:1000;
 }
+
 .twoCols{
   display:grid;
   grid-template-columns: 1fr 120px;
   gap:10px;
 }
+
 .hint{
   margin-top:10px;
   color:var(--muted);
   font-size:12px;
-  font-weight:700;
+  font-weight:800;
 }
 
-/* ===== Sticky footer (modo super) ===== */
+@media (max-width: 420px){
+  .twoCols{ grid-template-columns: 1fr; }
+  .right{ gap:8px; }
+  .priceTag{ min-width:78px; }
+}
+
+/* =========================
+   STICKY FOOTER (modo super)
+   ========================= */
 .superFooter{
   position: fixed;
   left: 0;
@@ -358,17 +557,21 @@ body{
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
   padding: 10px 16px;
+  display:none; /* JS lo enciende solo en modo super */
 }
+
 .superFooter > *{
   max-width:720px;
   margin:0 auto;
 }
+
 .superFooter{
   display:flex;
   gap:12px;
   align-items:center;
   justify-content:space-between;
 }
+
 .superFooterLeft{
   display:flex;
   flex-direction:column;
@@ -383,301 +586,16 @@ body{
   font-size:18px;
   font-weight:1000;
 }
+
 .superFooterRight{
   display:flex;
   gap:10px;
   align-items:center;
 }
 
-/* Responsive base */
-@media (max-width: 420px){
-  .twoCols{ grid-template-columns: 1fr; }
-  .actionsBar{ flex-direction: column; }
-  .btn.icon{ width:100%; }
-  .right{ gap:8px; }
-  .priceTag{ min-width:78px; }
-}
-
-/* =========================================================
-   OVERRIDES ÚNICOS (evita solapamientos) · ÚLTIMO DEL ARCHIVO
-   ========================================================= */
-
-/* 1) MODO SÚPER: pantalla limpia (sin acciones ni buscador ni total central) */
-body.mode-super .actionsBar{ display:none !important; }
-body.mode-super #search{ display:none !important; }
-body.mode-super #totalBox{ display:none !important; }
-
-/* 2) MODO SÚPER: filas compactas y en 1 “línea visual”
-      - nombre permite 2 líneas
-      - controles siempre a la derecha
-      - sin meta “Unidades/Pendiente”
-*/
-body.mode-super .item{
-  display:flex !important;
-  flex-wrap: nowrap !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-  padding: 10px 12px !important;
-}
-
-body.mode-super .left{
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-
-body.mode-super .text{
-  min-width: 0 !important;
-}
-
-body.mode-super .meta{
-  display:none !important;
-}
-
-/* Nombre: 2 líneas máximo, más pequeño */
-body.mode-super .name{
-  font-size: 15px !important;
-  line-height: 1.2 !important;
-  font-weight: 900 !important;
-
-  white-space: normal !important;
-  overflow: hidden !important;
-
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-}
-
-/* Derecha: pegada al borde derecho, sin ocupar 100% */
-body.mode-super .right{
-  flex: 0 0 auto !important;
-  width: auto !important;
-  margin-left: auto !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  gap: 10px !important;
-  flex-wrap: nowrap !important;
-}
-
-/* En súper ocultamos el precio unitario (ya lo haces, lo reafirmo) */
-body.mode-super .priceTag{ display:none !important; }
-
-/* Controles compactos */
-body.mode-super .qtyControls{
-  border-radius: 12px !important;
-}
-body.mode-super .qtyBtn{
-  padding: 8px 10px !important;
-  font-size: 16px !important;
-}
-body.mode-super .qtyVal{
-  padding: 8px 10px !important;
-  min-width: 26px !important;
-  font-size: 15px !important;
-  font-weight: 900 !important;
-}
-
-/* Subtotal compacto */
-body.mode-super .subtotal{
-  min-width: auto !important;
-  white-space: nowrap !important;
-  font-size: 15px !important;
-  font-weight: 900 !important;
-}
-
-/* Papelera compacta */
-body.mode-super .btnTiny{
-  padding: 6px 8px !important;
-  border-radius: 10px !important;
-}
-
-/* 3) MÓVIL MUY PEQUEÑO: si no cabe, permitimos que baje la derecha a otra línea */
-@media (max-width: 360px){
-  body.mode-super .item{ flex-wrap: wrap !important; }
-  body.mode-super .right{ width: 100% !important; justify-content: flex-end !important; }
-}
-
-body.mode-catalog .name.checked{
-  opacity: 1 !important;
-  text-decoration: none !important;
-}
-body.mode-catalog .meta{
-  font-weight: 800;
-}
-body.mode-catalog .meta.added{
-  color:#111;
-}
-body.mode-catalog .meta.added .pill{
-  display:inline-block;
-  padding:2px 8px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:#f6f7f9;
-  margin-right:6px;
-  font-weight:900;
-  font-size:12px;
-}
-
-body.mode-catalog .item.selected{
-  background:#f3f4f6;
-}
-body.mode-catalog .name.checked{
-  opacity:1 !important;
-  text-decoration:none !important;
-}
-
 /* =========================
-   CATÁLOGO · ITEM SELECCIONADO
+   HISTORIAL (UI 2026)
    ========================= */
-
-/* Quitamos tachado en catálogo */
-body.mode-catalog .name.checked{
-  text-decoration: none !important;
-  opacity: 1 !important;
-}
-
-/* Fondo suave cuando está marcado */
-body.mode-catalog .item.selected{
-  background: linear-gradient(
-    90deg,
-    #f0f7ff 0%,
-    #f8fbff 100%
-  );
-}
-
-/* Borde izquierdo sutil (feedback visual claro) */
-body.mode-catalog .item.selected{
-  box-shadow: inset 4px 0 0 #3b82f6;
-}
-
-/* Hover suave para no marcados */
-body.mode-catalog .item:not(.selected):hover{
-  background:#fafafa;
-}
-
-/* =========================
-   HISTORIAL · UI 2026
-   ========================= */
-
-.historyCard{
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px;
-  background:#fff;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.historyTop{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.historyMain{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  min-width:0;
-}
-
-.historyTitle{
-  font-weight:1000;
-  font-size:14px;
-  color:var(--muted);
-}
-
-.historyNumbers{
-  display:flex;
-  align-items:baseline;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.historyTotal{
-  font-weight:1000;
-  font-size:22px;
-  letter-spacing:.2px;
-}
-
-.historyCount{
-  font-weight:900;
-  font-size:13px;
-  color:var(--muted);
-  background:var(--pill);
-  border:1px solid var(--line);
-  padding:6px 10px;
-  border-radius:999px;
-}
-
-.historyDate{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.historyActions{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex:0 0 auto;
-}
-
-.btn.small{
-  padding:8px 10px;
-  border-radius:12px;
-  font-weight:900;
-}
-
-.btn.view{
-  background:#f6f7f9;
-  border-color:var(--line);
-}
-
-.btn.delete{
-  background:var(--red-bg);
-  border-color:var(--red-bd);
-  color:var(--red-tx);
-}
-
-.historyDetails{
-  border-top:1px solid #eef0f5;
-  padding-top:10px;
-  display:none;
-}
-
-.historyDetails.on{
-  display:block;
-}
-
-.historyRow{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  font-size:14px;
-  padding:6px 0;
-}
-
-.historyRowName{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.historyRowPrice{
-  font-weight:900;
-  white-space:nowrap;
-}
-
-/* =========================
-   HISTORIAL + STATS (2026 UI)
-   PÉGALO AL FINAL de assets/app.css
-   ========================= */
-
-/* Tarjetas historial */
 .historyCard{
   border:1px solid var(--line);
   border-radius:16px;
@@ -735,7 +653,6 @@ body.mode-catalog .item:not(.selected):hover{
   font-weight:800;
 }
 
-/* Acciones */
 .historyActions{
   display:flex;
   gap:8px;
@@ -750,18 +667,13 @@ body.mode-catalog .item:not(.selected):hover{
   font-weight:1000;
   font-size:12px;
 }
-
-.btn.small.view{
-  background:#f6f7f9;
-}
-
+.btn.small.view{ background:#f6f7f9; }
 .btn.small.delete{
   background:var(--red-bg);
   border-color:var(--red-bd);
   color:var(--red-tx);
 }
 
-/* Detalle desplegable */
 .historyDetails{
   display:none;
   margin-top:10px;
@@ -788,224 +700,9 @@ body.mode-catalog .item:not(.selected):hover{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-
 .historyRowPrice{
   font-size:14px;
   font-weight:1000;
   color:#111;
   white-space:nowrap;
-}
-
-/* =========================
-   MODAL (genérico) — para Stats si lo usas
-   ========================= */
-.modal .modalHeader .btn{
-  padding:8px 10px;
-  border-radius:12px;
-  font-weight:1000;
-}
-
-/* Stats cards dentro del modal (si usas estilos inline, esto igual no afecta) */
-.statsGrid{
-  display:grid;
-  gap:10px;
-}
-.statsCard{
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px;
-  background:#fff;
-}
-.statsCardTitle{
-  font-weight:1000;
-  margin-bottom:8px;
-}
-.statsRow{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap:10px;
-}
-.statsKpi{
-  border:1px solid #eef0f5;
-  border-radius:14px;
-  padding:10px;
-  background:#fafbfc;
-}
-.statsKpiLabel{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:900;
-}
-.statsKpiValue{
-  font-size:18px;
-  font-weight:1000;
-  margin-top:2px;
-}
-
-/* Responsive */
-@media (max-width:420px){
-  .historyTop{ align-items:flex-start; }
-  .historyTotal{ font-size:20px; }
-  .historyActions{ gap:6px; }
-  .btn.small{ width:auto; }
-  .statsRow{ grid-template-columns: 1fr; }
-}
-
-/* Topbar auto-hide en móvil */
-.topbar{
-  transition: transform .22s ease, opacity .22s ease;
-  will-change: transform;
-}
-
-body.header-hidden .topbar{
-  transform: translateY(-110%);
-  opacity: .98;
-}
-
-/* (opcional) cuando se oculta, que el contenido no “salte” raro */
-body.header-hidden .content{
-  padding-top: 12px;
-}
-
-.superNav{
-  margin-top:10px;
-}
-
-.btn.back{
-  width:100%;
-  justify-content:center;
-  font-weight:900;
-  border-radius:14px;
-}
-
-.badge:empty{
-  display:none;
-}
-
-/* ==========================
-   MODAL STATS: mobile-safe
-   ========================== */
-
-/* El backdrop del modal: centrado pero con safe-area */
-.modalBack{
-  padding:
-    calc(12px + env(safe-area-inset-top))
-    calc(12px + env(safe-area-inset-right))
-    calc(12px + env(safe-area-inset-bottom))
-    calc(12px + env(safe-area-inset-left));
-}
-
-/* “Sheet” más alto y usable en móvil */
-.modalSheet{
-  width: 100%;
-  max-width: 560px;
-  max-height: min(78vh, 720px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Header fijo dentro del modal */
-.modalHeaderSticky{
-  position: sticky;
-  top: 0;
-  background: #fff;
-  z-index: 5;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
-}
-
-/* Título del modal */
-.modalTitleMain{
-  font-weight: 1000;
-  font-size: 16px;
-  line-height: 1.15;
-}
-.modalTitleSub{
-  margin-top: 2px;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 800;
-}
-
-/* Cuerpo con scroll interno */
-.modalBodyScroll{
-  overflow: auto;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Tarjetas de stats */
-.statsSection{
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 12px;
-  background: #fff;
-  margin-bottom: 12px;
-}
-
-.statsSectionTitle{
-  font-weight: 1000;
-  font-size: 13px;
-  color: #111;
-  margin-bottom: 10px;
-}
-
-/* Grid responsive */
-.statsGrid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-@media (max-width: 420px){
-  .modalSheet{ max-height: 82vh; }
-  .statsGrid{ grid-template-columns: 1fr; }
-}
-
-/* KPI cards */
-.kpi{
-  border: 1px solid #eef0f5;
-  border-radius: 14px;
-  padding: 10px;
-  background: #fafbfc;
-}
-
-.kpiLabel{
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 900;
-}
-
-.kpiValue{
-  margin-top: 4px;
-  font-size: 20px;
-  font-weight: 1000;
-  color: #111;
-}
-
-.primaryAction{
-  flex:1;
-  font-size:16px;
-  font-weight:1000;
-}
-
-.btn.ghost{
-  background:#fff;
-  border-color:#e6e8ee;
-  color:#444;
-  font-weight:800;
-}
-
-.btn.icon{
-  width:44px;
-  height:44px;
-  padding:0;
-}
-
-.btn.subtle{
-  font-size:13px;
-  padding:8px 10px;
-  opacity:.75;
 }
