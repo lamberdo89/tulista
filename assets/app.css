@@ -881,3 +881,131 @@ body.header-hidden .content{
 .badge:empty{
   display:none;
 }
+
+/* ==========================
+   MODAL STATS: mobile-safe
+   ========================== */
+
+/* El backdrop del modal: centrado pero con safe-area */
+.modalBack{
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom))
+    calc(12px + env(safe-area-inset-left));
+}
+
+/* “Sheet” más alto y usable en móvil */
+.modalSheet{
+  width: 100%;
+  max-width: 560px;
+  max-height: min(78vh, 720px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header fijo dentro del modal */
+.modalHeaderSticky{
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 5;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Título del modal */
+.modalTitleMain{
+  font-weight: 1000;
+  font-size: 16px;
+  line-height: 1.15;
+}
+.modalTitleSub{
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+/* Cuerpo con scroll interno */
+.modalBodyScroll{
+  overflow: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tarjetas de stats */
+.statsSection{
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  background: #fff;
+  margin-bottom: 12px;
+}
+
+.statsSectionTitle{
+  font-weight: 1000;
+  font-size: 13px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+/* Grid responsive */
+.statsGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 420px){
+  .modalSheet{ max-height: 82vh; }
+  .statsGrid{ grid-template-columns: 1fr; }
+}
+
+/* KPI cards */
+.kpi{
+  border: 1px solid #eef0f5;
+  border-radius: 14px;
+  padding: 10px;
+  background: #fafbfc;
+}
+
+.kpiLabel{
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.kpiValue{
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 1000;
+  color: #111;
+}
+
+.primaryAction{
+  flex:1;
+  font-size:16px;
+  font-weight:1000;
+}
+
+.btn.ghost{
+  background:#fff;
+  border-color:#e6e8ee;
+  color:#444;
+  font-weight:800;
+}
+
+.btn.icon{
+  width:44px;
+  height:44px;
+  padding:0;
+}
+
+.btn.subtle{
+  font-size:13px;
+  padding:8px 10px;
+  opacity:.75;
+}

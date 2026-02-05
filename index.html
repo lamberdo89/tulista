@@ -27,10 +27,10 @@
 </div>
 
       <div class="actionsBar">
-  <button class="btn add icon" id="btnAdd" type="button">➕ Añadir</button>
-  <button class="btn reset icon" id="btnReset" type="button">↺ Reset</button>
-  <button class="btn history icon" id="btnHistory" type="button">🕓 Historial</button>
-  <button class="btn icon" id="btnStats" type="button">📊 Stats</button>
+  <button class="btn add primaryAction" id="btnAdd">＋ Añadir</button>
+  <button class="btn reset subtle" id="btnReset">Reset</button>
+  <button class="btn ghost icon" id="btnHistory">🧾</button>
+  <button class="btn ghost icon" id="btnStats">📊</button>
 </div>
 
 
@@ -134,22 +134,20 @@
     </div>
   </div>
 
-  <!-- Modal Estadísticas -->
+ <!-- Modal Estadísticas -->
 <div id="statsModal" class="modalBack" style="display:none;">
-  <div class="modal">
-    <div class="modalHeader">
-      <div>Estadísticas</div>
-      <button class="btn" id="btnCloseStats" type="button">Cerrar</button>
+  <div class="modal modalSheet">
+    <div class="modalHeader modalHeaderSticky">
+      <div class="modalTitle">
+        <div class="modalTitleMain">Estadísticas</div>
+        <div class="modalTitleSub">Resumen de gasto</div>
+      </div>
+      <button class="btn ghost" id="btnCloseStats" type="button">Cerrar</button>
     </div>
 
-    <div id="statsBody" style="margin-top:12px;"></div>
-
-    <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
-      Calculado desde tu historial (Finalizar compra).
-    </div>
+    <div id="statsBody" class="modalBodyScroll"></div>
   </div>
 </div>
-
 
   <script src="assets/db.js"></script>
   <script src="assets/app.js"></script>

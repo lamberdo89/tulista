@@ -514,37 +514,41 @@ function renderStats() {
   const last30 = sumHistoryBetween(last30From, now);
   const month = sumHistoryBetween(monthFrom, now);
 
-  const box = (title, s) => `
-    <div class="statsCard">
-      <div class="statsCardTitle">${title}</div>
-      <div class="statsRow">
-        <div class="statsKpi">
-          <div class="statsKpiLabel">Total gastado</div>
-          <div class="statsKpiValue">${euro(s.total)}</div>
+  const section = (title, s) => `
+    <div class="statsSection">
+      <div class="statsSectionTitle">${title}</div>
+
+      <div class="statsGrid">
+        <div class="kpi">
+          <div class="kpiLabel">Total gastado</div>
+          <div class="kpiValue">${euro(s.total)}</div>
         </div>
-        <div class="statsKpi">
-          <div class="statsKpiLabel">Compras</div>
-          <div class="statsKpiValue">${s.compras}</div>
+
+        <div class="kpi">
+          <div class="kpiLabel">Compras registradas</div>
+          <div class="kpiValue">${s.compras}</div>
         </div>
-        <div class="statsKpi">
-          <div class="statsKpiLabel">Productos (total)</div>
-          <div class="statsKpiValue">${s.productos}</div>
+
+        <div class="kpi">
+          <div class="kpiLabel">Productos comprados</div>
+          <div class="kpiValue">${s.productos}</div>
         </div>
-        <div class="statsKpi">
-          <div class="statsKpiLabel">Media por compra</div>
-          <div class="statsKpiValue">${euro(s.media)}</div>
+
+        <div class="kpi">
+          <div class="kpiLabel">Ticket medio</div>
+          <div class="kpiValue">${euro(s.media)}</div>
         </div>
       </div>
     </div>
   `;
 
   el.statsBody.innerHTML = `
-    <div class="statsGrid">
-      ${box("Últimos 30 días", last30)}
-      ${box("Mes actual", month)}
-    </div>
+    ${section("Últimos 30 días", last30)}
+    ${section("Mes actual", month)}
+    <div class="hint">Nota: los totales dependen de que hayas puesto precios en los productos.</div>
   `;
 }
+
 
 
 // ---------- PDF (simple) ----------
