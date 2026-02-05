@@ -204,6 +204,7 @@ body{
   border-bottom:1px solid #eef0f5;
 }
 
+/* ===== LISTA: por defecto 1 línea (catálogo compacto) ===== */
 .item{
   display:flex;
   justify-content:space-between;
@@ -211,6 +212,9 @@ body{
   padding:12px 12px;
   border-top:1px solid #eef0f5;
   background:#fff;
+
+  flex-wrap: nowrap;         /* ✅ IMPORTANTE */
+  align-items: center;       /* ✅ IMPORTANTE */
 }
 .item:first-child{ border-top:0; }
 .item.done{
@@ -246,6 +250,9 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
+
+  flex: 0 0 auto;            /* ✅ IMPORTANTE */
+  width: auto;               /* ✅ IMPORTANTE */
 }
 
 .priceTag{
@@ -382,7 +389,7 @@ body{
   align-items:center;
 }
 
-/* Responsive */
+/* Responsive base */
 @media (max-width: 420px){
   .twoCols{ grid-template-columns: 1fr; }
   .actionsBar{ flex-direction: column; }
@@ -391,54 +398,73 @@ body{
   .priceTag{ min-width:78px; }
 }
 
-/* ===== FIX MOBILE: que la parte derecha no se salga ===== */
-
-/* 1) Permitir que el item pueda envolver contenido */
-.item{
+/* ==============================
+   FIX MOBILE SOLO PARA MODO SÚPER
+   (evita que la derecha se salga)
+   ============================== */
+body.mode-super .item{
   flex-wrap: wrap;
   align-items: flex-start;
 }
-
-/* 2) La izquierda ocupa toda la fila si hace falta */
-.left{
+body.mode-super .left{
   flex: 1 1 100%;
   min-width: 0;
 }
-
-/* 3) La derecha baja a segunda línea y se ajusta */
-.right{
+body.mode-super .right{
   flex: 1 1 100%;
   width: 100%;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px;
 }
-
-/* 4) Precio y subtotal no fuerzan ancho fijo en móvil */
-.priceTag,
-.subtotal{
+body.mode-super .priceTag,
+body.mode-super .subtotal{
   min-width: 0;
 }
-
-/* 5) En móvil, compactar controles */
 @media (max-width: 420px){
-  .priceTag{
+  body.mode-super .priceTag{
     padding: 8px 10px;
     border-radius: 12px;
     font-size: 16px;
   }
-
-  .qtyBtn{
+  body.mode-super .qtyBtn{
     padding: 10px 12px;
   }
-
-  .qtyVal{
+  body.mode-super .qtyVal{
     min-width: 28px;
   }
-
-  /* botón basura más compacto */
-  .btnTiny{
+  body.mode-super .btnTiny{
     padding: 8px 10px;
     border-radius: 12px;
   }
+}
+
+/* En modo súper: fuera precio unitario (pill), solo qty + subtotal */
+body.mode-super .priceTag{
+  display:none !important;
+}
+
+/* =========================
+   CATÁLOGO más compacto
+   ========================= */
+body.mode-catalog .item{
+  padding: 8px 12px !important;
+  gap: 10px !important;
+}
+body.mode-catalog .left{
+  gap: 10px !important;
+}
+body.mode-catalog .name{
+  font-size: 16px !important;
+}
+body.mode-catalog .meta{
+  font-size: 12px !important;
+  margin-top: 2px !important;
+}
+body.mode-catalog .right{
+  gap: 8px !important;
+}
+body.mode-catalog .cb{
+  width: 20px !important;
+  height: 20px !important;
 }

@@ -177,6 +177,8 @@ let hideBought = false;
 // ---------- UI helpers ----------
 function setMode(newMode) {
   mode = newMode;
+  document.body.classList.toggle("mode-super", mode === "super");
+  document.body.classList.toggle("mode-catalog", mode === "catalog");
 
   el.tabCatalog?.classList.toggle("on", mode === "catalog");
   el.tabSuper?.classList.toggle("on", mode === "super");
