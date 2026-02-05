@@ -40,3 +40,24 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
 .modalHeader{display:flex;justify-content:space-between;align-items:center;font-weight:900}
 .twoCols{display:flex;gap:8px}
 .twoCols .search{margin-top:0}
+
+.qtyControls{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  justify-content:flex-end;
+}
+.qtyBtn{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid #dfe3ea;
+  background:#fff;
+  font-weight:800;
+}
+.qtyVal{
+  min-width:28px;
+  text-align:center;
+  font-weight:700;
+}
