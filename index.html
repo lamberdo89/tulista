@@ -16,17 +16,23 @@
         <div class="badge" id="badge">Cargando…</div>
       </div>
 
-      <div class="tabs">
-        <button class="tab on" id="tabCatalogo" type="button">Catálogo</button>
-        <button class="tab" id="tabSuper" type="button">Modo súper</button>
-      </div>
+      <!-- Navegación normal (solo Catálogo) -->
+<div class="tabs" id="tabs">
+  <button class="tab on" id="tabCatalogo" type="button">Catálogo</button>
+  <button class="tab" id="tabSuper" type="button">Súper</button>
+</div>
+<!-- Navegación súper (solo botón volver) -->
+<div class="superNav" id="superNav" style="display:none;">
+  <button class="btn ghost back" id="btnBackCatalog" type="button">← Catálogo</button>
+</div>
 
       <div class="actionsBar">
-        <button class="btn reset icon" id="btnReset" type="button">🧹 Reset</button>
-        <button class="btn add icon" id="btnAdd" type="button">➕ Añadir</button>
-        <button class="btn history icon" id="btnHistory" type="button">🧾 Historial</button>
-        <button class="btn" id="btnStats" type="button">📊 Estadísticas</button>
-      </div>
+  <button class="btn add icon" id="btnAdd" type="button">➕ Añadir</button>
+  <button class="btn reset icon" id="btnReset" type="button">↺ Reset</button>
+  <button class="btn history icon" id="btnHistory" type="button">🕓 Historial</button>
+  <button class="btn icon" id="btnStats" type="button">📊 Stats</button>
+</div>
+
 
       <input class="search" id="search" type="text" placeholder="Buscar…" />
 

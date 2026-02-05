@@ -850,3 +850,30 @@ body.mode-catalog .item:not(.selected):hover{
   .btn.small{ width:auto; }
   .statsRow{ grid-template-columns: 1fr; }
 }
+
+/* Topbar auto-hide en móvil */
+.topbar{
+  transition: transform .22s ease, opacity .22s ease;
+  will-change: transform;
+}
+
+body.header-hidden .topbar{
+  transform: translateY(-110%);
+  opacity: .98;
+}
+
+/* (opcional) cuando se oculta, que el contenido no “salte” raro */
+body.header-hidden .content{
+  padding-top: 12px;
+}
+
+.superNav{
+  margin-top:10px;
+}
+
+.btn.back{
+  width:100%;
+  justify-content:center;
+  font-weight:900;
+  border-radius:14px;
+}

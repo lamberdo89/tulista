@@ -214,15 +214,20 @@ const el = {
 function setMode(newMode) {
   mode = newMode;
 
-  // body classes para CSS
   document.body.classList.toggle("mode-super", mode === "super");
   document.body.classList.toggle("mode-catalog", mode === "catalog");
 
-  // tabs
+  // tabs activos
   if (el.tabCatalog) el.tabCatalog.classList.toggle("on", mode === "catalog");
   if (el.tabSuper) el.tabSuper.classList.toggle("on", mode === "super");
 
-  // buscador: solo catálogo
+  // mostrar/ocultar navegación
+  const tabs = document.getElementById("tabs");
+  const superNav = document.getElementById("superNav");
+  if (tabs) tabs.style.display = (mode === "super") ? "none" : "";
+  if (superNav) superNav.style.display = (mode === "super") ? "" : "none";
+
+  // buscador solo en catálogo
   if (el.search) {
     if (mode === "super") {
       el.search.value = "";
@@ -232,18 +237,19 @@ function setMode(newMode) {
     }
   }
 
-  // totalBox: solo si lo usas en catálogo (si quieres, déjalo oculto siempre)
-  if (el.totalBox) el.totalBox.style.display = (mode === "catalog") ? "" : "none";
+  // ocultar total del medio siempre (ya lo querías fuera)
+  if (el.totalBox) el.totalBox.style.display = "none";
 
-  // actionsBar: solo catálogo
+  // actionsBar solo en catálogo
   const actionsBar = document.querySelector(".actionsBar");
   if (actionsBar) actionsBar.style.display = (mode === "super") ? "none" : "";
 
-  // footer: solo super
+  // footer inferior solo en súper
   if (el.superFooter) el.superFooter.style.display = (mode === "super") ? "" : "none";
 
   render();
 }
+
 
 function updateHeader() {
   const { marked, units, total } = computeTotals();
@@ -849,6 +855,7 @@ function wireUI() {
 
     if (t && t.id === "tabCatalogo") { e.preventDefault(); setMode("catalog"); return; }
     if (t && t.id === "tabSuper") { e.preventDefault(); setMode("super"); return; }
+    if (t && t.id === "btnBackCatalog") { e.preventDefault(); setMode("catalog"); return; }
 
     if (t && t.id === "btnStats") { e.preventDefault(); openStatsModal(); return; }
     if (t && t.id === "btnCloseStats") { e.preventDefault(); closeStatsModal(); return; }
@@ -936,10 +943,59 @@ function wireUI() {
   el.statsModal?.addEventListener("click", (e) => { if (e.target === el.statsModal) closeStatsModal(); });
 }
 
+function enableHeaderAutoHide() {
+  // Solo móvil (ajusta si quieres)
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  if (!isMobile) return;
+
+  let lastY = window.scrollY || 0;
+  let ticking = false;
+
+  const MIN_DELTA = 8;     // sensibilidad
+  const SHOW_AT_TOP = 24;  // cerca del top, siempre mostrar
+
+  function onScroll() {
+    const y = window.scrollY || 0;
+    const dy = y - lastY;
+
+    // Siempre visible cerca del inicio
+    if (y <= SHOW_AT_TOP) {
+      document.body.classList.remove("header-hidden");
+      lastY = y;
+      return;
+    }
+
+    // Ignora micro-movimientos
+    if (Math.abs(dy) < MIN_DELTA) return;
+
+    if (dy > 0) {
+      // bajando -> ocultar
+      document.body.classList.add("header-hidden");
+    } else {
+      // subiendo -> mostrar
+      document.body.classList.remove("header-hidden");
+    }
+
+    lastY = y;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      onScroll();
+      ticking = false;
+    });
+  }, { passive: true });
+}
+
 // ---------- Init ----------
 (async function init() {
   loadState();
   wireUI();
+
+  enableHeaderAutoHide();
+
 
   try {
     await loadCatalog();
