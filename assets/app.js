@@ -11,10 +11,10 @@ let catalog = [];
 let mode = "catalog";
 
 let state = {
-  checked: {},       // en lista de compra (modo super)
+  checked: {},
   qty: {},
   priceOverride: {},
-  done: {}           // comprado (solo sentido en modo super)
+  done: {}
 };
 
 let localProducts = [];
@@ -117,9 +117,7 @@ function isChecked(id) { return !!state.checked[id]; }
 function setChecked(id, v) {
   state.checked[id] = !!v;
   if (state.checked[id] && !state.qty[id]) state.qty[id] = 1;
-  if (!state.checked[id]) {
-    delete state.done[id];
-  }
+  if (!state.checked[id]) delete state.done[id];
 }
 function isDone(id) { return !!state.done[id]; }
 function setDone(id, v) { state.done[id] = !!v; }
@@ -190,24 +188,20 @@ const el = {
   addName: document.getElementById("addName"),
   addQty: document.getElementById("addQty"),
   addPrice: document.getElementById("addPrice"),
-  btnCloseAdd: document.getElementById("btnCloseAdd"),
   btnSaveAdd: document.getElementById("btnSaveAdd"),
 
   priceModal: document.getElementById("priceModal"),
   priceTitle: document.getElementById("priceTitle"),
   priceValue: document.getElementById("priceValue"),
-  btnClosePrice: document.getElementById("btnClosePrice"),
   btnSavePrice: document.getElementById("btnSavePrice"),
 
   historyModal: document.getElementById("historyModal"),
   historyList: document.getElementById("historyList"),
-  btnCloseHistory: document.getElementById("btnCloseHistory"),
   btnClearHistory: document.getElementById("btnClearHistory"),
 
   btnStats: document.getElementById("btnStats"),
   statsModal: document.getElementById("statsModal"),
   statsBody: document.getElementById("statsBody"),
-  btnCloseStats: document.getElementById("btnCloseStats"),
 };
 
 // ---------- UI helpers ----------
@@ -217,17 +211,14 @@ function setMode(newMode) {
   document.body.classList.toggle("mode-super", mode === "super");
   document.body.classList.toggle("mode-catalog", mode === "catalog");
 
-  // tabs activos
   if (el.tabCatalog) el.tabCatalog.classList.toggle("on", mode === "catalog");
   if (el.tabSuper) el.tabSuper.classList.toggle("on", mode === "super");
 
-  // mostrar/ocultar navegación
   const tabs = document.getElementById("tabs");
   const superNav = document.getElementById("superNav");
   if (tabs) tabs.style.display = (mode === "super") ? "none" : "";
   if (superNav) superNav.style.display = (mode === "super") ? "" : "none";
 
-  // buscador solo en catálogo
   if (el.search) {
     if (mode === "super") {
       el.search.value = "";
@@ -237,27 +228,19 @@ function setMode(newMode) {
     }
   }
 
-  // ocultar total del medio siempre (ya lo querías fuera)
   if (el.totalBox) el.totalBox.style.display = "none";
 
-  // actionsBar solo en catálogo
   const actionsBar = document.querySelector(".actionsBar");
   if (actionsBar) actionsBar.style.display = (mode === "super") ? "none" : "";
 
-  // footer inferior solo en súper
   if (el.superFooter) el.superFooter.style.display = (mode === "super") ? "" : "none";
 
   render();
 }
 
-
 function updateHeader() {
   const { total } = computeTotals();
-
-  // Topbar: SIN contadores (limpio)
   if (el.badge) el.badge.textContent = "";
-
-  // Footer inferior (modo súper)
   if (el.footerTotal) el.footerTotal.textContent = euro(total);
 }
 
@@ -268,11 +251,6 @@ function openAddModal() {
   if (el.addPrice) el.addPrice.value = "";
   setTimeout(() => el.addName?.focus(), 50);
 }
-function closeAddModal() {
-  if (!el.addModal) return;
-  el.addModal.style.display = "none";
-}
-
 function openPriceModal(product) {
   if (!el.priceModal) return;
   editingPriceProductId = String(product.id);
@@ -284,30 +262,16 @@ function openPriceModal(product) {
   el.priceModal.style.display = "flex";
   setTimeout(() => el.priceValue?.focus(), 50);
 }
-function closePriceModal() {
-  if (!el.priceModal) return;
-  el.priceModal.style.display = "none";
-  editingPriceProductId = null;
-}
 
 function openHistoryModal() {
   if (!el.historyModal) return;
   el.historyModal.style.display = "flex";
   renderHistory();
 }
-function closeHistoryModal() {
-  if (!el.historyModal) return;
-  el.historyModal.style.display = "none";
-}
-
 function openStatsModal() {
   if (!el.statsModal) return;
   el.statsModal.style.display = "flex";
   renderStats();
-}
-function closeStatsModal() {
-  if (!el.statsModal) return;
-  el.statsModal.style.display = "none";
 }
 
 function matchesSearch(p, q) {
@@ -386,7 +350,6 @@ function deleteHistoryItem(ts) {
   saveHistory(history);
   renderHistory();
 }
-
 function clearHistory() {
   if (!confirm("¿Borrar todo el historial?")) return;
   saveHistory([]);
@@ -501,9 +464,6 @@ function renderHistory() {
 }
 
 // ---------- Stats ----------
-// (OPCIONAL) Si quieres que Stats use estas clases y no estilos inline,
-// sustituye tu renderStats() por este:
-
 function renderStats() {
   if (!el.statsBody) return;
 
@@ -514,9 +474,10 @@ function renderStats() {
   const last30 = sumHistoryBetween(last30From, now);
   const month = sumHistoryBetween(monthFrom, now);
 
-  const section = (title, s) => `
+  const section = (title, subtitle, s) => `
     <div class="statsSection">
       <div class="statsSectionTitle">${title}</div>
+      ${subtitle ? `<div class="statsSectionSub">${subtitle}</div>` : ""}
 
       <div class="statsGrid">
         <div class="kpi">
@@ -525,12 +486,12 @@ function renderStats() {
         </div>
 
         <div class="kpi">
-          <div class="kpiLabel">Compras registradas</div>
+          <div class="kpiLabel">Compras</div>
           <div class="kpiValue">${s.compras}</div>
         </div>
 
         <div class="kpi">
-          <div class="kpiLabel">Productos comprados</div>
+          <div class="kpiLabel">Productos</div>
           <div class="kpiValue">${s.productos}</div>
         </div>
 
@@ -543,13 +504,11 @@ function renderStats() {
   `;
 
   el.statsBody.innerHTML = `
-    ${section("Últimos 30 días", last30)}
-    ${section("Mes actual", month)}
+    ${section("🕒 Últimos 30 días", "Actividad reciente", last30)}
+    ${section("📅 Mes actual", "Desde el día 1 hasta hoy", month)}
     <div class="hint">Nota: los totales dependen de que hayas puesto precios en los productos.</div>
   `;
 }
-
-
 
 // ---------- PDF (simple) ----------
 function buildPrintHtml() {
@@ -624,13 +583,6 @@ function printPdf() {
 }
 
 // ---------- Render helpers ----------
-function renderSectionTitle(text) {
-  const li = document.createElement("li");
-  li.className = "sectionTitle";
-  li.textContent = text;
-  return li;
-}
-
 function renderItem(p, { superMode }) {
   const id = String(p.id);
   const checked = isChecked(id);
@@ -643,7 +595,6 @@ function renderItem(p, { superMode }) {
 
   const li = document.createElement("li");
   li.className = "item" + (done ? " done" : "");
-
   if (!superMode && checked) li.classList.add("selected");
 
   const left = document.createElement("div");
@@ -668,8 +619,6 @@ function renderItem(p, { superMode }) {
   const name = document.createElement("div");
   name.className = "name";
   name.textContent = p.name;
-
-  // En súper: tachado solo si "done". En catálogo: NO tachamos (solo .selected de fondo)
   if (superMode && done) name.classList.add("checked");
 
   const meta = document.createElement("div");
@@ -685,7 +634,6 @@ function renderItem(p, { superMode }) {
   const right = document.createElement("div");
   right.className = "right";
 
-  // Precio: oculto en súper por CSS, pero lo dejamos aquí para catálogo
   const priceTag = document.createElement("button");
   priceTag.type = "button";
   priceTag.className = "priceTag" + (!hasPrice ? " missing" : "");
@@ -759,7 +707,6 @@ function renderItem(p, { superMode }) {
       });
       right.appendChild(btnRemove);
 
-      // meta en súper no lo quieres (CSS lo oculta), así que da igual
       meta.textContent = `Unidades: ${getQty(id)}`;
     } else {
       meta.textContent = checked ? `Unidades: ${getQty(id)}` : "En catálogo";
@@ -789,7 +736,6 @@ function render() {
   updateHeader();
 
   const q = (mode === "super") ? "" : norm(el.search?.value || "");
-
   let items = catalog;
   if (mode === "super") items = items.filter(p => isChecked(String(p.id)));
   if (q) items = items.filter(p => matchesSearch(p, q));
@@ -797,7 +743,6 @@ function render() {
   el.list.innerHTML = "";
 
   if (mode === "super") {
-    // Súper: sin textos de “Nada pendiente” y sin secciones si no quieres (dejamos 1 sola lista)
     if (items.length === 0) {
       const li = document.createElement("li");
       li.className = "item";
@@ -806,14 +751,11 @@ function render() {
       return;
     }
 
-    // Si quieres ocultar comprados, filtramos
     const visible = hideBought ? items.filter(p => !isDone(String(p.id))) : items;
-
     visible.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
     return;
   }
 
-  // Catálogo
   if (items.length === 0) {
     const li = document.createElement("li");
     li.className = "item";
@@ -857,15 +799,51 @@ async function loadCatalog() {
 
 // ---------- Wire UI ----------
 function wireUI() {
+
+  // helpers cierre robusto
+  function closeModal(modalEl) {
+    if (!modalEl) return;
+    modalEl.style.display = "none";
+  }
+
   document.addEventListener("click", (e) => {
     const t = e.target;
+
+    // ✅ CIERRE ROBUSTO:
+    // - funciona si pulsas iconos/spans dentro del botón
+    // - funciona con data-close="#idModal" o sin él
+    // - funciona con ids clásicos aunque se te haya olvidado el data-close
+    const closeTrigger = t?.closest?.(
+      "[data-close], #btnCloseAdd, #btnClosePrice, #btnCloseHistory, #btnCloseStats"
+    );
+
+    if (closeTrigger) {
+      e.preventDefault();
+
+      // 1) data-close selector explícito
+      const sel = closeTrigger.getAttribute("data-close");
+      if (sel) {
+        const targetModal = document.querySelector(sel);
+        if (targetModal) { closeModal(targetModal); return; }
+      }
+
+      // 2) modal más cercano
+      const nearestModal = closeTrigger.closest(".modalBack");
+      if (nearestModal) { closeModal(nearestModal); return; }
+
+      // 3) fallback por variables
+      if (closeTrigger.id === "btnCloseAdd") closeModal(el.addModal);
+      if (closeTrigger.id === "btnClosePrice") closeModal(el.priceModal);
+      if (closeTrigger.id === "btnCloseHistory") closeModal(el.historyModal);
+      if (closeTrigger.id === "btnCloseStats") closeModal(el.statsModal);
+      return;
+    }
 
     if (t && t.id === "tabCatalogo") { e.preventDefault(); setMode("catalog"); return; }
     if (t && t.id === "tabSuper") { e.preventDefault(); setMode("super"); return; }
     if (t && t.id === "btnBackCatalog") { e.preventDefault(); setMode("catalog"); return; }
 
     if (t && t.id === "btnStats") { e.preventDefault(); openStatsModal(); return; }
-    if (t && t.id === "btnCloseStats") { e.preventDefault(); closeStatsModal(); return; }
 
     if (t && t.id === "btnReset") {
       e.preventDefault();
@@ -879,7 +857,6 @@ function wireUI() {
     }
 
     if (t && t.id === "btnAdd") { e.preventDefault(); openAddModal(); return; }
-    if (t && t.id === "btnCloseAdd") { e.preventDefault(); closeAddModal(); return; }
 
     if (t && t.id === "btnSaveAdd") {
       e.preventDefault();
@@ -908,12 +885,11 @@ function wireUI() {
       if (el.addQty) el.addQty.value = "1";
       if (el.addPrice) el.addPrice.value = "";
 
-      closeAddModal();
+      closeModal(el.addModal);
       setMode("super");
       return;
     }
 
-    if (t && t.id === "btnClosePrice") { e.preventDefault(); closePriceModal(); return; }
     if (t && t.id === "btnSavePrice") {
       e.preventDefault();
       if (!editingPriceProductId) return;
@@ -923,13 +899,13 @@ function wireUI() {
       state.priceOverride[editingPriceProductId] = (price == null) ? null : price;
 
       saveState();
-      closePriceModal();
+      closeModal(el.priceModal);
+      editingPriceProductId = null;
       render();
       return;
     }
 
     if (t && t.id === "btnHistory") { e.preventDefault(); openHistoryModal(); return; }
-    if (t && t.id === "btnCloseHistory") { e.preventDefault(); closeHistoryModal(); return; }
     if (t && t.id === "btnClearHistory") { e.preventDefault(); clearHistory(); return; }
 
     if (t && t.id === "btnFinish") { e.preventDefault(); finalizePurchase(); return; }
@@ -944,44 +920,36 @@ function wireUI() {
     render();
   });
 
-  el.addModal?.addEventListener("click", (e) => { if (e.target === el.addModal) closeAddModal(); });
-  el.priceModal?.addEventListener("click", (e) => { if (e.target === el.priceModal) closePriceModal(); });
-  el.historyModal?.addEventListener("click", (e) => { if (e.target === el.historyModal) closeHistoryModal(); });
-  el.statsModal?.addEventListener("click", (e) => { if (e.target === el.statsModal) closeStatsModal(); });
+  // Backdrop click cierra (mantengo tus cierres)
+  el.addModal?.addEventListener("click", (e) => { if (e.target === el.addModal) el.addModal.style.display = "none"; });
+  el.priceModal?.addEventListener("click", (e) => { if (e.target === el.priceModal) el.priceModal.style.display = "none"; });
+  el.historyModal?.addEventListener("click", (e) => { if (e.target === el.historyModal) el.historyModal.style.display = "none"; });
+  el.statsModal?.addEventListener("click", (e) => { if (e.target === el.statsModal) el.statsModal.style.display = "none"; });
 }
 
 function enableHeaderAutoHide() {
-  // Solo móvil (ajusta si quieres)
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
   if (!isMobile) return;
 
   let lastY = window.scrollY || 0;
   let ticking = false;
 
-  const MIN_DELTA = 8;     // sensibilidad
-  const SHOW_AT_TOP = 24;  // cerca del top, siempre mostrar
+  const MIN_DELTA = 8;
+  const SHOW_AT_TOP = 24;
 
   function onScroll() {
     const y = window.scrollY || 0;
     const dy = y - lastY;
 
-    // Siempre visible cerca del inicio
     if (y <= SHOW_AT_TOP) {
       document.body.classList.remove("header-hidden");
       lastY = y;
       return;
     }
-
-    // Ignora micro-movimientos
     if (Math.abs(dy) < MIN_DELTA) return;
 
-    if (dy > 0) {
-      // bajando -> ocultar
-      document.body.classList.add("header-hidden");
-    } else {
-      // subiendo -> mostrar
-      document.body.classList.remove("header-hidden");
-    }
+    if (dy > 0) document.body.classList.add("header-hidden");
+    else document.body.classList.remove("header-hidden");
 
     lastY = y;
   }
@@ -1000,9 +968,7 @@ function enableHeaderAutoHide() {
 (async function init() {
   loadState();
   wireUI();
-
   enableHeaderAutoHide();
-
 
   try {
     await loadCatalog();

@@ -76,8 +76,7 @@
     <div class="modal">
       <div class="modalHeader">
         <div>Añadir producto</div>
-        <button class="btn" id="btnCloseAdd" type="button">Cerrar</button>
-      </div>
+        <button class="btn" data-close="#addModal">Cerrar</button>      </div>
 
       <div class="twoCols" style="margin-top:12px;">
         <input class="search" id="addName" type="text" placeholder="Ej. peras" autocomplete="off" />
@@ -100,7 +99,7 @@
     <div class="modal">
       <div class="modalHeader">
         <div id="priceTitle">Precio</div>
-        <button class="btn" id="btnClosePrice" type="button">Cerrar</button>
+        <button class="btn" data-close="#priceModal">Cerrar</button>
       </div>
 
       <div class="twoCols" style="margin-top:12px;">
@@ -119,7 +118,7 @@
     <div class="modal">
       <div class="modalHeader">
         <div>Compras anteriores</div>
-        <button class="btn" id="btnCloseHistory" type="button">Cerrar</button>
+        <button class="btn" data-close="#historyModal">Cerrar</button>
       </div>
 
       <div style="display:flex; gap:8px; margin-top:12px;">
@@ -134,15 +133,15 @@
     </div>
   </div>
 
- <!-- Modal Estadísticas -->
+<!-- STATS MODAL -->
 <div id="statsModal" class="modalBack" style="display:none;">
   <div class="modal modalSheet">
     <div class="modalHeader modalHeaderSticky">
-      <div class="modalTitle">
+      <div>
         <div class="modalTitleMain">Estadísticas</div>
         <div class="modalTitleSub">Resumen de gasto</div>
       </div>
-      <button class="btn ghost" id="btnCloseStats" type="button">Cerrar</button>
+      <button class="btn" data-close="#statsModal">Cerrar</button>
     </div>
 
     <div id="statsBody" class="modalBodyScroll"></div>
