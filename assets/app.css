@@ -468,3 +468,87 @@ body.mode-catalog .cb{
   width: 20px !important;
   height: 20px !important;
 }
+
+/* ============================
+   MODO SÚPER: pantalla limpia
+   ============================ */
+
+/* Oculta barra de acciones (Reset/Añadir/Historial) */
+body.mode-super .actionsBar{
+  display:none !important;
+}
+
+/* Oculta buscador */
+body.mode-super #search{
+  display:none !important;
+}
+
+/* Oculta total “del medio” */
+body.mode-super #totalBox{
+  display:none !important;
+}
+
+/* (Opcional) reduce un poco el alto del topbar al quitar cosas */
+body.mode-super .topbar{
+  padding-bottom: 10px;
+}
+
+/* ===== MODO SÚPER: cada producto en UNA SOLA LÍNEA (compacto) ===== */
+
+/* En súper, NO hacemos wrap (adiós espacios en blanco) */
+body.mode-super .item{
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  padding: 10px 12px !important;
+}
+
+/* Izquierda y derecha en la misma fila */
+body.mode-super .left{
+  flex: 1 1 auto !important;
+}
+
+body.mode-super .right{
+  flex: 0 0 auto !important;
+  width: auto !important;
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  gap: 10px !important;
+}
+
+/* Evitar que el nombre/meta empujen demasiado */
+body.mode-super .text{
+  min-width: 0 !important;
+}
+body.mode-super .name{
+  max-width: 340px; /* ajusta si quieres */
+}
+
+/* Controles más compactos */
+body.mode-super .qtyControls{
+  border-radius: 12px !important;
+}
+body.mode-super .qtyBtn,
+body.mode-super .qtyVal{
+  padding: 8px 10px !important;
+}
+body.mode-super .qtyVal{
+  min-width: 26px !important;
+}
+
+/* Subtotal alineado y sin “pill” raro */
+body.mode-super .subtotal{
+  min-width: 86px !important;
+}
+
+/* Botón basura compacto */
+body.mode-super .btnTiny{
+  padding: 8px 10px !important;
+  border-radius: 12px !important;
+}
+
+/* En móviles muy pequeños, permite 2 líneas SOLO si no cabe */
+@media (max-width: 360px){
+  body.mode-super .item{ flex-wrap: wrap !important; }
+  body.mode-super .right{ width: 100% !important; }
+  body.mode-super .subtotal{ text-align: right !important; }
+}

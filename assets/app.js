@@ -175,19 +175,42 @@ const el = {
 let hideBought = false;
 
 // ---------- UI helpers ----------
+// ✅ setMode (editado para “modo súper limpio”)
 function setMode(newMode) {
   mode = newMode;
+
+  // clases para CSS (body.mode-super / body.mode-catalog)
   document.body.classList.toggle("mode-super", mode === "super");
   document.body.classList.toggle("mode-catalog", mode === "catalog");
 
-  el.tabCatalog?.classList.toggle("on", mode === "catalog");
-  el.tabSuper?.classList.toggle("on", mode === "super");
+  // tabs
+  if (el.tabCatalog) el.tabCatalog.classList.toggle("on", mode === "catalog");
+  if (el.tabSuper) el.tabSuper.classList.toggle("on", mode === "super");
 
-  if (el.totalBox) el.totalBox.style.display = (mode === "super") ? "" : "none";
-  if (el.superFooter) el.superFooter.style.display = (mode === "super") ? "" : "none";
-  if (el.superTools) el.superTools.style.display = (mode === "super") ? "" : "none";
+  // ✅ en modo súper NO queremos buscador
+  if (el.search) {
+    if (mode === "super") {
+      el.search.value = "";
+      el.search.style.display = "none";
+    } else {
+      el.search.style.display = "";
+    }
+  }
 
-  if (el.search) el.search.value = "";
+  // ✅ en modo súper NO queremos total “del medio”
+  if (el.totalBox) el.totalBox.style.display = "none";
+
+  // ✅ en modo súper NO queremos la barra de acciones (Reset/Añadir/Historial)
+  const actionsBar = document.querySelector(".actionsBar");
+  if (actionsBar) actionsBar.style.display = (mode === "super") ? "none" : "";
+
+  // ✅ footer (barra inferior) solo en modo súper
+  const superFooter = document.querySelector(".superFooter");
+  if (superFooter) superFooter.style.display = (mode === "super") ? "" : "none";
+
+  // finalizar compra (si aún lo usas)
+  if (el.finishRow) el.finishRow.style.display = (mode === "super") ? "" : "none";
+
   render();
 }
 
@@ -689,12 +712,14 @@ function renderItem(p, { superMode }) {
   return li;
 }
 
+// ✅ render (editado para “modo súper limpio”: sin búsqueda en súper y sin totalBox)
 function render() {
   if (!el.list) return;
 
   updateHeader();
 
-  const q = norm(el.search?.value || "");
+  // ✅ en modo súper NO aplicamos búsqueda (porque la ocultamos)
+  const q = (mode === "super") ? "" : norm(el.search?.value || "");
 
   // catálogo = todos, súper = solo seleccionados
   let items = catalog;
@@ -714,7 +739,7 @@ function render() {
       li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada pendiente</div><div class="meta">Marca algo en catálogo o restaura una compra</div></div></div>`;
       el.list.appendChild(li);
     } else {
-      pending.forEach(p => el.list.appendChild(renderItem(p, { superMode:true })));
+      pending.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
     }
 
     if (!hideBought) {
@@ -725,7 +750,7 @@ function render() {
         li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada comprado aún</div><div class="meta">Marca los productos conforme los vayas metiendo al carro</div></div></div>`;
         el.list.appendChild(li);
       } else {
-        bought.forEach(p => el.list.appendChild(renderItem(p, { superMode:true })));
+        bought.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
       }
     }
 
@@ -741,8 +766,9 @@ function render() {
     return;
   }
 
-  items.forEach(p => el.list.appendChild(renderItem(p, { superMode:false })));
+  items.forEach(p => el.list.appendChild(renderItem(p, { superMode: false })));
 }
+
 
 // ---------- Load catalog ----------
 async function loadCatalog() {
