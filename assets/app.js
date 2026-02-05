@@ -566,6 +566,10 @@ function renderItem(p, { superMode }) {
 
   const li = document.createElement("li");
   li.className = "item" + (done ? " done" : "");
+  if (checked && mode === "catalog") {
+  li.classList.add("selected");
+  }
+
 
   const left = document.createElement("div");
   left.className = "left";

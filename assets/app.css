@@ -526,3 +526,32 @@ body.mode-catalog .name.checked{
   opacity:1 !important;
   text-decoration:none !important;
 }
+
+/* =========================
+   CATÁLOGO · ITEM SELECCIONADO
+   ========================= */
+
+/* Quitamos tachado en catálogo */
+body.mode-catalog .name.checked{
+  text-decoration: none !important;
+  opacity: 1 !important;
+}
+
+/* Fondo suave cuando está marcado */
+body.mode-catalog .item.selected{
+  background: linear-gradient(
+    90deg,
+    #f0f7ff 0%,
+    #f8fbff 100%
+  );
+}
+
+/* Borde izquierdo sutil (feedback visual claro) */
+body.mode-catalog .item.selected{
+  box-shadow: inset 4px 0 0 #3b82f6;
+}
+
+/* Hover suave para no marcados */
+body.mode-catalog .item:not(.selected):hover{
+  background:#fafafa;
+}
