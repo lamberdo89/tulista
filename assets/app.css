@@ -877,3 +877,7 @@ body.header-hidden .content{
   font-weight:900;
   border-radius:14px;
 }
+
+.badge:empty{
+  display:none;
+}

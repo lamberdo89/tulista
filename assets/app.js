@@ -252,9 +252,12 @@ function setMode(newMode) {
 
 
 function updateHeader() {
-  const { marked, units, total } = computeTotals();
-  if (el.badge) el.badge.textContent = `Productos: ${marked} · Unidades: ${units} · Catálogo: ${catalog.length}`;
-  if (el.totalValue) el.totalValue.textContent = euro(total);
+  const { total } = computeTotals();
+
+  // Topbar: SIN contadores (limpio)
+  if (el.badge) el.badge.textContent = "";
+
+  // Footer inferior (modo súper)
   if (el.footerTotal) el.footerTotal.textContent = euro(total);
 }
 
