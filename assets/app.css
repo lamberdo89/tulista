@@ -31,7 +31,7 @@ body{
   max-width:720px;
   margin:0 auto;
   min-height:100vh;
-  padding-bottom:84px; /* espacio para footer sticky */
+  padding-bottom:84px;
 }
 
 /* =========================
@@ -49,16 +49,9 @@ body{
   will-change: transform;
 }
 
-/* Auto-hide topbar (JS pone body.header-hidden) */
 body.header-hidden .topbar{
   transform: translateY(-110%);
   opacity: .98;
-}
-
-.title h1{
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: .2px;
 }
 
 .badge{
@@ -68,7 +61,6 @@ body.header-hidden .topbar{
 }
 .badge:empty{display:none}
 
-/* Título centrado (si lo usas en el HTML) */
 .appTitle{
   display:flex;
   flex-direction:column;
@@ -109,13 +101,10 @@ body.mode-super .appName{font-size:17px}
   transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease, background .15s ease;
 }
 
-.tab.on{
-  border-color:#111;
-}
+.tab.on{ border-color:#111; }
 
-/* CATÁLOGO → secundario */
 #tabCatalogo{
-  flex: .8;
+  flex:.8;
   font-size:14px;
   opacity:.72;
   background:#f6f7f9;
@@ -129,9 +118,9 @@ body.mode-super .appName{font-size:17px}
   transform:none;
 }
 
-/* “SUPER” → protagonista (más grande + más visible) */
+/* Protagonista */
 #tabSuper{
-  flex: 1.35;
+  flex:1.35;
   font-size:16px;
   letter-spacing:.2px;
   background: linear-gradient(90deg,#111 0%, #1f2937 100%);
@@ -139,25 +128,16 @@ body.mode-super .appName{font-size:17px}
   border-color:#111;
   box-shadow: 0 10px 26px rgba(0,0,0,.18);
 }
-#tabSuper:not(.on){
-  opacity:.92;
-}
+#tabSuper:not(.on){ opacity:.92; }
 #tabSuper.on{
   opacity:1;
   transform: translateY(-1px);
   box-shadow: 0 14px 34px rgba(0,0,0,.22);
 }
 
-/* Móvil: súper aún más “botón principal” */
-@media (max-width: 520px){
-  #tabCatalogo{
-    font-size:13px;
-    padding:8px 10px;
-  }
-  #tabSuper{
-    font-size:15px;
-    padding:12px 14px;
-  }
+@media (max-width:520px){
+  #tabCatalogo{ font-size:13px; padding:8px 10px; }
+  #tabSuper{ font-size:15px; padding:12px 14px; }
 }
 
 /* =========================
@@ -167,6 +147,7 @@ body.mode-super .appName{font-size:17px}
   display:flex;
   gap:10px;
   margin-top:12px;
+  align-items:stretch;
 }
 
 .btn{
@@ -185,14 +166,12 @@ body.mode-super .appName{font-size:17px}
   color:#fff;
   border-color:#111;
 }
-
 .btn.ghost{
   background:#fff;
   border-color:#e6e8ee;
   color:#444;
   font-weight:800;
 }
-
 .btn.icon{
   display:flex;
   align-items:center;
@@ -217,18 +196,42 @@ body.mode-super .appName{font-size:17px}
   color:var(--purple-tx);
 }
 
-/* Móvil: acciones en 2 columnas y botones grandes */
-@media (max-width: 520px){
+/* ✅ MÓVIL: 2 filas
+   - Fila 1: Historial | Stats
+   - Fila 2: Añadir (izq, grande) | Reset (dcha, pequeño)
+*/
+@media (max-width:520px){
   .actionsBar{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    align-items: stretch;
+    display:grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas:
+      "history stats"
+      "add     reset" !important;
+    gap:10px !important;
+    align-items:stretch !important;
   }
-  .actionsBar .btn{
-    width:100%;
-    justify-content:center;
-    text-align:center;
+
+  #btnHistory{ grid-area: history; width:100% !important; }
+  #btnStats{ grid-area: stats; width:100% !important; }
+
+  #btnAdd{
+    grid-area: add;
+    width:100% !important;
+    justify-content:center !important;
+    font-size:16px !important;
+    font-weight:1000 !important;
+    padding:14px 16px !important;
+    border-radius:16px !important;
+  }
+
+  #btnReset{
+    grid-area: reset;
+    width:auto !important;
+    min-width:44px;
+    padding:10px 12px !important;
+    font-size:13px !important;
+    font-weight:900 !important;
+    opacity:.75;
   }
 }
 
@@ -283,20 +286,8 @@ body.mode-super .appName{font-size:17px}
   border-radius:16px;
   overflow:hidden;
 }
-
 .list{ list-style:none; padding:0; margin:0; }
 
-.sectionTitle{
-  padding:12px;
-  font-weight:1000;
-  font-size:12px;
-  color:var(--muted);
-  letter-spacing:.3px;
-  background:#fafbfc;
-  border-bottom:1px solid #eef0f5;
-}
-
-/* Base item (catálogo compacto) */
 .item{
   display:flex;
   justify-content:space-between;
@@ -308,10 +299,7 @@ body.mode-super .appName{font-size:17px}
   align-items: center;
 }
 .item:first-child{ border-top:0; }
-.item.done{
-  background:#fbfbfc;
-  opacity:.78;
-}
+.item.done{ background:#fbfbfc; opacity:.78; }
 
 .left{
   display:flex;
@@ -329,21 +317,16 @@ body.mode-super .appName{font-size:17px}
   overflow:hidden;
   text-overflow:ellipsis;
 }
-/* Por defecto NO tachamos (lo gestionas por modo abajo) */
 .name.checked{ opacity:1; text-decoration:none; }
 
-.meta{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:2px;
-}
+.meta{ color:var(--muted); font-size:12px; margin-top:2px; }
 
 .right{
   display:flex;
   align-items:center;
   gap:10px;
-  flex: 0 0 auto;
-  width: auto;
+  flex:0 0 auto;
+  width:auto;
 }
 
 .priceTag{
@@ -379,13 +362,8 @@ body.mode-super .appName{font-size:17px}
   font-weight:1000;
 }
 
-.subtotal{
-  font-weight:1000;
-  min-width:88px;
-  text-align:right;
-}
+.subtotal{ font-weight:1000; min-width:88px; text-align:right; }
 
-/* botón basura (modo super) */
 .btnTiny{
   border:1px solid var(--line);
   background:#fff;
@@ -400,28 +378,22 @@ body.mode-super .appName{font-size:17px}
   color:var(--red-tx);
 }
 
-/* =========================
-   CATÁLOGO: seleccionado
-   ========================= */
+/* Catálogo seleccionado */
 body.mode-catalog .item{ padding:8px 12px; }
 body.mode-catalog .cb{ width:20px; height:20px; }
-
 body.mode-catalog .item.selected{
   background: linear-gradient(90deg,#f0f7ff 0%,#f8fbff 100%);
   box-shadow: inset 4px 0 0 #3b82f6;
 }
-body.mode-catalog .item:not(.selected):hover{
-  background:#fafafa;
-}
+body.mode-catalog .item:not(.selected):hover{ background:#fafafa; }
 
 /* =========================
-   MODO SÚPER: pantalla limpia
+   MODO SÚPER / COMPRAR
    ========================= */
 body.mode-super .actionsBar{ display:none !important; }
 body.mode-super #search{ display:none !important; }
 body.mode-super #totalBox{ display:none !important; }
 
-/* MODO SÚPER: fila compacta, nombre 2 líneas, controles a la derecha */
 body.mode-super .item{
   display:flex;
   flex-wrap: nowrap;
@@ -434,7 +406,6 @@ body.mode-super .left{ flex: 1 1 auto; min-width: 0; }
 body.mode-super .text{ min-width:0; }
 body.mode-super .meta{ display:none; }
 
-/* Nombre 2 líneas (más pequeño) */
 body.mode-super .name{
   font-size: 15px;
   line-height: 1.2;
@@ -446,7 +417,6 @@ body.mode-super .name{
   -webkit-box-orient: vertical;
 }
 
-/* Controles pegados a la derecha */
 body.mode-super .right{
   flex: 0 0 auto;
   width: auto;
@@ -458,34 +428,15 @@ body.mode-super .right{
   flex-wrap: nowrap;
 }
 
-/* En súper ocultamos precio unitario */
 body.mode-super .priceTag{ display:none; }
 
-/* Controles compactos */
 body.mode-super .qtyControls{ border-radius: 12px; }
-body.mode-super .qtyBtn{
-  padding: 8px 10px;
-  font-size: 16px;
-}
-body.mode-super .qtyVal{
-  padding: 8px 10px;
-  min-width: 26px;
-  font-size: 15px;
-  font-weight: 900;
-}
-body.mode-super .subtotal{
-  min-width: auto;
-  white-space: nowrap;
-  font-size: 15px;
-  font-weight: 900;
-}
-body.mode-super .btnTiny{
-  padding: 6px 8px;
-  border-radius: 10px;
-}
+body.mode-super .qtyBtn{ padding: 8px 10px; font-size: 16px; }
+body.mode-super .qtyVal{ padding: 8px 10px; min-width: 26px; font-size: 15px; font-weight: 900; }
+body.mode-super .subtotal{ min-width: auto; white-space: nowrap; font-size: 15px; font-weight: 900; }
+body.mode-super .btnTiny{ padding: 6px 8px; border-radius: 10px; }
 
-/* Móvil muy pequeño: deja que la derecha baje si no cabe */
-@media (max-width: 360px){
+@media (max-width:360px){
   body.mode-super .item{ flex-wrap: wrap; }
   body.mode-super .right{ width: 100%; justify-content:flex-end; }
 }
@@ -507,7 +458,6 @@ body.mode-super .btnTiny{
     calc(12px + env(safe-area-inset-bottom))
     calc(12px + env(safe-area-inset-left));
 }
-
 .modal{
   width:100%;
   max-width:520px;
@@ -516,7 +466,6 @@ body.mode-super .btnTiny{
   border:1px solid var(--line);
   padding:14px;
 }
-
 .modalHeader{
   display:flex;
   justify-content:space-between;
@@ -530,22 +479,20 @@ body.mode-super .btnTiny{
   grid-template-columns: 1fr 120px;
   gap:10px;
 }
-
 .hint{
   margin-top:10px;
   color:var(--muted);
   font-size:12px;
   font-weight:800;
 }
-
-@media (max-width: 420px){
+@media (max-width:420px){
   .twoCols{ grid-template-columns: 1fr; }
   .right{ gap:8px; }
   .priceTag{ min-width:78px; }
 }
 
 /* =========================
-   STICKY FOOTER (modo super)
+   STICKY FOOTER
    ========================= */
 .superFooter{
   position: fixed;
@@ -557,13 +504,9 @@ body.mode-super .btnTiny{
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
   padding: 10px 16px;
-  display:none; /* JS lo enciende solo en modo super */
+  display:none;
 }
-
-.superFooter > *{
-  max-width:720px;
-  margin:0 auto;
-}
+.superFooter > *{ max-width:720px; margin:0 auto; }
 
 .superFooter{
   display:flex;
@@ -577,24 +520,12 @@ body.mode-super .btnTiny{
   flex-direction:column;
   gap:2px;
 }
-.superFooterLabel{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:900;
-}
-.superFooterValue{
-  font-size:18px;
-  font-weight:1000;
-}
-
-.superFooterRight{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
+.superFooterLabel{ font-size:12px; color:var(--muted); font-weight:900; }
+.superFooterValue{ font-size:18px; font-weight:1000; }
+.superFooterRight{ display:flex; gap:10px; align-items:center; }
 
 /* =========================
-   HISTORIAL (UI 2026)
+   HISTORIAL / STATS / SHEETS
    ========================= */
 .historyCard{
   border:1px solid var(--line);
@@ -629,12 +560,7 @@ body.mode-super .btnTiny{
   flex-wrap:wrap;
 }
 
-.historyTotal{
-  font-size:22px;
-  font-weight:1000;
-  line-height:1.1;
-  color:#111;
-}
+.historyTotal{ font-size:22px; font-weight:1000; line-height:1.1; color:#111; }
 
 .historyCount{
   font-size:12px;
@@ -646,12 +572,7 @@ body.mode-super .btnTiny{
   border-radius:999px;
 }
 
-.historyDate{
-  margin-top:6px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:800;
-}
+.historyDate{ margin-top:6px; font-size:12px; color:var(--muted); font-weight:800; }
 
 .historyActions{
   display:flex;
@@ -700,12 +621,7 @@ body.mode-super .btnTiny{
   text-overflow:ellipsis;
   white-space:nowrap;
 }
-.historyRowPrice{
-  font-size:14px;
-  font-weight:1000;
-  color:#111;
-  white-space:nowrap;
-}
+.historyRowPrice{ font-size:14px; font-weight:1000; color:#111; white-space:nowrap; }
 
 .modalSheet{
   width:100%;
@@ -730,19 +646,8 @@ body.mode-super .btnTiny{
   -webkit-overflow-scrolling:touch;
 }
 
-.modalTitleMain{
-  font-size: 18px;
-  font-weight: 1000;
-  letter-spacing: .3px;
-}
-
-.modalTitleSub{
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 800;
-  margin-top: 2px;
-}
-
+.modalTitleMain{ font-size:18px; font-weight:1000; letter-spacing:.3px; }
+.modalTitleSub{ font-size:13px; color:var(--muted); font-weight:800; margin-top:2px; }
 
 .statsSection{
   border:1px solid var(--line);
@@ -752,11 +657,10 @@ body.mode-super .btnTiny{
   margin-bottom:12px;
 }
 .statsSectionTitle{
-  font-size: 14px;
-  font-weight: 1000;
-  letter-spacing: .2px;
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.2px;
   color:#111;
-
   padding-bottom:6px;
   margin-bottom:12px;
   border-bottom:1px solid #eef0f5;
@@ -767,9 +671,7 @@ body.mode-super .btnTiny{
   grid-template-columns: 1fr 1fr;
   gap:10px;
 }
-@media (max-width:420px){
-  .statsGrid{grid-template-columns:1fr;}
-}
+@media (max-width:420px){ .statsGrid{ grid-template-columns:1fr; } }
 
 .kpi{
   border:1px solid #eef0f5;
@@ -778,55 +680,39 @@ body.mode-super .btnTiny{
   background:#fafbfc;
 }
 .kpiLabel{
-  font-size: 11px;
+  font-size:11px;
   text-transform: uppercase;
   letter-spacing: .4px;
   color: var(--muted);
   font-weight: 900;
 }
-
 .kpiValue{
-  font-size: 22px;
-  font-weight: 1000;
-  margin-top: 4px;
-  line-height: 1.1;
+  font-size:22px;
+  font-weight:1000;
+  margin-top:4px;
+  line-height:1.1;
 }
 
 /* =========================
    BOTÓN CERRAR · UNIFICADO
    ========================= */
-
 .btnCloseUnified{
   display:inline-flex;
   align-items:center;
   gap:6px;
-
   padding:8px 12px;
   border-radius:12px;
-
   background:#fff;
   border:1px solid var(--line);
-
   font-size:13px;
   font-weight:900;
   color:#444;
-
   cursor:pointer;
   white-space:nowrap;
 }
+.btnCloseUnified:hover{ background:#f6f7f9; }
+.btnCloseUnified:active{ transform: translateY(1px); }
 
-.btnCloseUnified:hover{
-  background:#f6f7f9;
-}
-
-.btnCloseUnified:active{
-  transform: translateY(1px);
-}
-
-/* En móvil: un poco más compacto */
 @media (max-width:420px){
-  .btnCloseUnified{
-    padding:6px 10px;
-    font-size:12px;
-  }
+  .btnCloseUnified{ padding:6px 10px; font-size:12px; }
 }

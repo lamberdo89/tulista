@@ -3,40 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lista compra</title>
+  <title>Lista de la compra</title>
   <link rel="stylesheet" href="assets/app.css" />
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
 </head>
+
 <body>
   <div class="app">
+
     <div class="topbar">
       <div class="appTitle">
-  <div class="appName">Lista de la compra</div>
-</div>
+        <div class="appName">Lista de la compra</div>
+      </div>
 
+      <!-- Navegación normal (Catálogo) -->
+      <div class="tabs" id="tabs">
+        <button class="tab on" id="tabCatalogo" type="button">Catálogo</button>
+        <button class="tab" id="tabSuper" type="button">Comprar</button>
+      </div>
 
-      <!-- Navegación normal (solo Catálogo) -->
-<div class="tabs" id="tabs">
-  <button class="tab on" id="tabCatalogo" type="button">Catálogo</button>
-  <button class="tab" id="tabSuper" type="button">Súper</button>
-</div>
-<!-- Navegación súper (solo botón volver) -->
-<div class="superNav" id="superNav" style="display:none;">
-  <button class="btn ghost back" id="btnBackCatalog" type="button">← Catálogo</button>
-</div>
+      <!-- Navegación Comprar (solo botón volver) -->
+      <div class="superNav" id="superNav" style="display:none;">
+        <button class="btn ghost back" id="btnBackCatalog" type="button">← Volver al catálogo</button>
+      </div>
 
-      <div class="actionsBar">
-  <button class="btn icon add" id="btnAdd" type="button">➕ Añadir</button>
-  <button class="btn icon reset" id="btnReset" type="button">🧽 Reset</button>
-  <button class="btn icon history" id="btnHistory" type="button">🧾 Historial</button>
-  <button class="btn icon ghost" id="btnStats" type="button">📊 Stats</button>
-</div>
+      <!-- Acciones Catálogo -->
+      <div class="actionsBar" id="actionsBar">
+        <!-- Fila 1: Historial / Estadísticas -->
+        <button class="btn icon history" id="btnHistory" type="button">🧾 Historial</button>
+        <button class="btn icon ghost" id="btnStats" type="button">📊 Estadísticas</button>
 
+        <!-- Fila 2: Añadir (izq, grande) / Reset (dcha, pequeño) -->
+        <button class="btn icon add" id="btnAdd" type="button">➕ Añadir</button>
+        <button class="btn icon reset" id="btnReset" type="button">🧽</button>
+      </div>
 
       <input class="search" id="search" type="text" placeholder="Buscar…" />
 
-      <!-- Solo visible en modo súper -->
+      <!-- Solo visible en modo Comprar -->
       <div class="superTools" id="superTools" style="display:none;">
         <label class="chip">
           <input type="checkbox" id="toggleHideBought" />
@@ -46,7 +51,6 @@
     </div>
 
     <div class="content">
-      <!-- Total (solo modo súper) -->
       <div class="totalBig" id="totalBox" style="display:none;">
         <div class="label">Total estimado</div>
         <div class="value" id="totalValue">0,00 €</div>
@@ -57,7 +61,7 @@
       </div>
     </div>
 
-    <!-- Sticky footer (solo modo súper) -->
+    <!-- Sticky footer (solo modo Comprar) -->
     <div class="superFooter" id="superFooter" style="display:none;">
       <div class="superFooterLeft">
         <div class="superFooterLabel">Total</div>
@@ -76,7 +80,8 @@
     <div class="modal">
       <div class="modalHeader">
         <div>Añadir producto</div>
-        <button class="btn" data-close="#addModal">Cerrar</button>      </div>
+        <button class="btn btnCloseUnified" type="button" data-close>Cerrar</button>
+      </div>
 
       <div class="twoCols" style="margin-top:12px;">
         <input class="search" id="addName" type="text" placeholder="Ej. peras" autocomplete="off" />
@@ -89,7 +94,7 @@
       </div>
 
       <div class="hint" style="margin-top:10px;">
-        Si pones cantidad y precio, se marca directamente y se suma al total del modo súper.
+        Si pones cantidad y precio, se marca directamente y se suma al total del modo Comprar.
       </div>
     </div>
   </div>
@@ -99,7 +104,7 @@
     <div class="modal">
       <div class="modalHeader">
         <div id="priceTitle">Precio</div>
-        <button class="btn" data-close="#priceModal">Cerrar</button>
+        <button class="btn btnCloseUnified" type="button" data-close>Cerrar</button>
       </div>
 
       <div class="twoCols" style="margin-top:12px;">
@@ -115,38 +120,43 @@
 
   <!-- Modal Historial -->
   <div id="historyModal" class="modalBack" style="display:none;">
-    <div class="modal">
-      <div class="modalHeader">
-        <div>Compras anteriores</div>
-        <button class="btn" data-close="#historyModal">Cerrar</button>
+    <div class="modal modalSheet">
+      <div class="modalHeader modalHeaderSticky">
+        <div>
+          <div class="modalTitleMain">Historial</div>
+          <div class="modalTitleSub">Compras anteriores</div>
+        </div>
+        <button class="btn btnCloseUnified" type="button" data-close>Cerrar</button>
       </div>
 
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <button class="btn reset" id="btnClearHistory" type="button" style="flex:1;">Borrar historial</button>
-      </div>
+      <div class="modalBodyScroll">
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="btn reset" id="btnClearHistory" type="button" style="flex:1;">Borrar historial</button>
+        </div>
 
-      <div id="historyList" style="margin-top:12px;"></div>
+        <div id="historyList"></div>
 
-      <div class="hint" style="margin-top:10px;">
-        “Finalizar” guarda total + detalle. Puedes “Restaurar” una compra para volver a marcar lo mismo.
+        <div class="hint" style="margin-top:10px;">
+          “Finalizar” guarda total + detalle.
+        </div>
       </div>
     </div>
   </div>
 
-<!-- STATS MODAL -->
-<div id="statsModal" class="modalBack" style="display:none;">
-  <div class="modal modalSheet">
-    <div class="modalHeader modalHeaderSticky">
-      <div>
-        <div class="modalTitleMain">Estadísticas</div>
-        <div class="modalTitleSub">Resumen de gasto</div>
+  <!-- Modal Estadísticas -->
+  <div id="statsModal" class="modalBack" style="display:none;">
+    <div class="modal modalSheet">
+      <div class="modalHeader modalHeaderSticky">
+        <div>
+          <div class="modalTitleMain">Estadísticas</div>
+          <div class="modalTitleSub">Resumen de gasto</div>
+        </div>
+        <button class="btn btnCloseUnified" type="button" data-close>Cerrar</button>
       </div>
-      <button class="btn" data-close="#statsModal">Cerrar</button>
-    </div>
 
-    <div id="statsBody" class="modalBodyScroll"></div>
+      <div id="statsBody" class="modalBodyScroll"></div>
+    </div>
   </div>
-</div>
 
   <script src="assets/db.js"></script>
   <script src="assets/app.js"></script>
