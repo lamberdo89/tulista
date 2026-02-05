@@ -1,4 +1,4 @@
-const CACHE_NAME = "lista-compra-v2"; // cambia versión cuando edites
+const CACHE_NAME = "lista-compra-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,40 +11,35 @@ const ASSETS = [
   "./icons/icon-512.png"
 ];
 
-// 1) Instala y cachea
+// 1) Precache
 self.addEventListener("install", (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(ASSETS);
-    self.skipWaiting();
-  })());
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
 });
 
-// 2) Activa y limpia caches viejas
+// 2) Activate (limpia caches viejas)
 self.addEventListener("activate", (event) => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve())));
-    self.clients.claim();
-  })());
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
+    )
+  );
+  self.clients.claim();
 });
 
-// 3) Fetch: cache-first
+// 3) Fetch: cache-first, luego red
 self.addEventListener("fetch", (event) => {
-  event.respondWith((async () => {
-    const cached = await caches.match(event.request);
-    if (cached) return cached;
-
-    try {
-      const res = await fetch(event.request);
-      return res;
-    } catch {
-      // fallback navegación
-      if (event.request.mode === "navigate") {
-        const fallback = await caches.match("./index.html");
-        if (fallback) return fallback;
-      }
-      return new Response("", { status: 204 });
-    }
-  })());
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).catch(async () => {
+        if (event.request.mode === "navigate") {
+          return caches.match("./index.html");
+        }
+        return new Response("", { status: 204 });
+      });
+    })
+  );
 });
