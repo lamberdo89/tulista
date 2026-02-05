@@ -3,17 +3,18 @@
 const CATALOG_URL = "./products.json";
 
 // Estado (localStorage)
-const STATE_KEY = "shopping_state_v2";
+const STATE_KEY = "shopping_state_v3";
 const LOCAL_PRODUCTS_KEY = "local_products_v1";
-const HISTORY_KEY = "shopping_history_v1"; // historial
+const HISTORY_KEY = "shopping_history_v1";
 
-let catalog = []; // [{id,name,price}]
-let mode = "catalog"; // "catalog" | "super"
+let catalog = [];
+let mode = "catalog";
 
 let state = {
-  checked: {},
+  checked: {},       // en lista de compra (modo super)
   qty: {},
-  priceOverride: {}
+  priceOverride: {},
+  done: {}           // comprado (solo sentido en modo super)
 };
 
 let localProducts = [];
@@ -55,6 +56,7 @@ function loadState() {
     state.checked = saved.checked || {};
     state.qty = saved.qty || {};
     state.priceOverride = saved.priceOverride || {};
+    state.done = saved.done || {};
   }
 }
 function saveState() {
@@ -75,13 +77,18 @@ function saveHistory(h) {
   window.LocalDB.set(HISTORY_KEY, h);
 }
 
-function isChecked(id) {
-  return !!state.checked[id];
-}
+function isChecked(id) { return !!state.checked[id]; }
 function setChecked(id, v) {
   state.checked[id] = !!v;
   if (state.checked[id] && !state.qty[id]) state.qty[id] = 1;
+  if (!state.checked[id]) {
+    // si lo quitas de la compra, también quita “comprado”
+    delete state.done[id];
+  }
 }
+function isDone(id) { return !!state.done[id]; }
+function setDone(id, v) { state.done[id] = !!v; }
+
 function getQty(id) {
   const q = Number(state.qty[id]);
   return Number.isFinite(q) && q >= 1 ? Math.floor(q) : 1;
@@ -90,6 +97,7 @@ function setQty(id, q) {
   const v = Math.max(1, Math.floor(Number(q) || 1));
   state.qty[id] = v;
 }
+
 function getPriceFor(id, product) {
   if (state.priceOverride && Object.prototype.hasOwnProperty.call(state.priceOverride, id)) {
     const v = state.priceOverride[id];
@@ -103,18 +111,23 @@ function getPriceFor(id, product) {
 function computeTotals() {
   let marked = 0;
   let total = 0;
+  let units = 0;
 
   for (const p of catalog) {
     const id = String(p.id);
     if (!isChecked(id)) continue;
     marked++;
 
+    const q = getQty(id);
+    units += q;
+
     const price = getPriceFor(id, p);
     if (price == null) continue;
 
-    total += price * getQty(id);
+    total += price * q;
   }
-  return { marked, total };
+
+  return { marked, units, total };
 }
 
 // ---------- DOM ----------
@@ -122,13 +135,11 @@ const el = {
   tabCatalog: document.getElementById("tabCatalogo") || document.getElementById("tabCatalog"),
   tabSuper: document.getElementById("tabSuper"),
 
-  btnMic: document.getElementById("btnMic"),
   btnReset: document.getElementById("btnReset"),
   btnAdd: document.getElementById("btnAdd"),
   btnHistory: document.getElementById("btnHistory"),
   btnFinish: document.getElementById("btnFinish"),
-
-  finishRow: document.getElementById("finishRow"),
+  btnPdf: document.getElementById("btnPdf"),
 
   search: document.getElementById("search"),
   list: document.getElementById("list"),
@@ -136,6 +147,11 @@ const el = {
 
   totalBox: document.getElementById("totalBox"),
   totalValue: document.getElementById("totalValue"),
+  footerTotal: document.getElementById("footerTotal"),
+
+  superFooter: document.getElementById("superFooter"),
+  superTools: document.getElementById("superTools"),
+  toggleHideBought: document.getElementById("toggleHideBought"),
 
   addModal: document.getElementById("addModal"),
   addName: document.getElementById("addName"),
@@ -156,31 +172,33 @@ const el = {
   btnClearHistory: document.getElementById("btnClearHistory"),
 };
 
+let hideBought = false;
+
 // ---------- UI helpers ----------
 function setMode(newMode) {
   mode = newMode;
 
-  if (el.tabCatalog) el.tabCatalog.classList.toggle("on", mode === "catalog");
-  if (el.tabSuper) el.tabSuper.classList.toggle("on", mode === "super");
+  el.tabCatalog?.classList.toggle("on", mode === "catalog");
+  el.tabSuper?.classList.toggle("on", mode === "super");
 
   if (el.totalBox) el.totalBox.style.display = (mode === "super") ? "" : "none";
-  if (el.finishRow) el.finishRow.style.display = (mode === "super") ? "" : "none";
+  if (el.superFooter) el.superFooter.style.display = (mode === "super") ? "" : "none";
+  if (el.superTools) el.superTools.style.display = (mode === "super") ? "" : "none";
 
   if (el.search) el.search.value = "";
   render();
 }
 
 function updateHeader() {
-  const { marked, total } = computeTotals();
-  if (el.badge) el.badge.textContent = `Marcados: ${marked} · Total: ${catalog.length}`;
+  const { marked, units, total } = computeTotals();
+  if (el.badge) el.badge.textContent = `Productos: ${marked} · Unidades: ${units} · Catálogo: ${catalog.length}`;
   if (el.totalValue) el.totalValue.textContent = euro(total);
-  if (el.totalBox) el.totalBox.style.display = (mode === "super") ? "" : "none";
-  if (el.finishRow) el.finishRow.style.display = (mode === "super") ? "" : "none";
+  if (el.footerTotal) el.footerTotal.textContent = euro(total);
 }
 
 function openAddModal() {
   if (!el.addModal) return;
-  el.addModal.style.display = "block";
+  el.addModal.style.display = "flex";
   if (el.addQty) el.addQty.value = "1";
   if (el.addPrice) el.addPrice.value = "";
   setTimeout(() => el.addName?.focus(), 50);
@@ -189,6 +207,7 @@ function closeAddModal() {
   if (!el.addModal) return;
   el.addModal.style.display = "none";
 }
+
 function openPriceModal(product) {
   if (!el.priceModal) return;
   editingPriceProductId = String(product.id);
@@ -197,7 +216,7 @@ function openPriceModal(product) {
   if (el.priceTitle) el.priceTitle.textContent = `Precio: ${product.name}`;
   if (el.priceValue) el.priceValue.value = (current == null) ? "" : String(current);
 
-  el.priceModal.style.display = "block";
+  el.priceModal.style.display = "flex";
   setTimeout(() => el.priceValue?.focus(), 50);
 }
 function closePriceModal() {
@@ -208,7 +227,7 @@ function closePriceModal() {
 
 function openHistoryModal() {
   if (!el.historyModal) return;
-  el.historyModal.style.display = "block";
+  el.historyModal.style.display = "flex";
   renderHistory();
 }
 function closeHistoryModal() {
@@ -276,7 +295,7 @@ function buildCurrentPurchaseSnapshot() {
 function finalizePurchase() {
   const snap = buildCurrentPurchaseSnapshot();
   if (snap.count === 0) {
-    alert("No hay productos marcados.");
+    alert("No hay productos en la compra.");
     return;
   }
 
@@ -286,6 +305,7 @@ function finalizePurchase() {
 
   state.checked = {};
   state.qty = {};
+  state.done = {};
   saveState();
 
   setMode("catalog");
@@ -299,6 +319,7 @@ function restorePurchase(ts) {
 
   state.checked = {};
   state.qty = {};
+  state.done = {};
 
   for (const it of found.items) {
     let p = catalog.find(x => String(x.id) === String(it.id)) || findByName(it.name);
@@ -331,19 +352,7 @@ function renderHistory() {
 
   const history = loadHistory();
   if (history.length === 0) {
-    el.historyList.innerHTML = `
-      <div style="
-        border:1px solid #e6e8ee;
-        background:#fff;
-        border-radius:16px;
-        padding:14px;
-        color:#6b7280;
-        font-size:13px;
-        font-weight:700;
-      ">
-        No hay compras guardadas aún.
-      </div>
-    `;
+    el.historyList.innerHTML = `<div class="hint">No hay compras guardadas aún.</div>`;
     return;
   }
 
@@ -353,64 +362,22 @@ function renderHistory() {
     const wrap = document.createElement("div");
     wrap.style.border = "1px solid #e6e8ee";
     wrap.style.borderRadius = "16px";
-    wrap.style.padding = "14px";
-    wrap.style.marginBottom = "12px";
+    wrap.style.padding = "12px";
+    wrap.style.marginBottom = "10px";
     wrap.style.background = "#fff";
 
-    // Header: TOTAL grande + chips
-    const header = document.createElement("div");
-    header.style.display = "flex";
-    header.style.justifyContent = "space-between";
-    header.style.gap = "12px";
-    header.style.alignItems = "flex-start";
+    const top = document.createElement("div");
+    top.style.display = "flex";
+    top.style.justifyContent = "space-between";
+    top.style.gap = "10px";
+    top.style.alignItems = "center";
 
     const left = document.createElement("div");
-    left.style.minWidth = "0";
-    left.style.flex = "1";
+    left.innerHTML = `
+      <div style="font-weight:1000;font-size:16px">Total: ${euro(Number(h.total) || 0)}</div>
+      <div style="color:#6b7280;font-size:12px;font-weight:900">Productos: ${h.count} · ${formatDate(h.ts)}</div>
+    `;
 
-    // TOTAL (principal)
-    const total = document.createElement("div");
-    total.textContent = euro(Number(h.total) || 0);
-    total.style.fontSize = "22px";
-    total.style.fontWeight = "900";
-    total.style.color = "#111";
-    total.style.lineHeight = "1.05";
-
-    // Subrow: chips (productos + fecha secundaria)
-    const sub = document.createElement("div");
-    sub.style.marginTop = "8px";
-    sub.style.display = "flex";
-    sub.style.flexWrap = "wrap";
-    sub.style.gap = "8px";
-    sub.style.alignItems = "center";
-
-    const pillItems = document.createElement("span");
-    pillItems.textContent = `${h.count} productos`;
-    pillItems.style.fontSize = "12px";
-    pillItems.style.fontWeight = "900";
-    pillItems.style.color = "#111";
-    pillItems.style.background = "#f6f7f9";
-    pillItems.style.border = "1px solid #e6e8ee";
-    pillItems.style.padding = "6px 10px";
-    pillItems.style.borderRadius = "999px";
-
-    const pillDate = document.createElement("span");
-    pillDate.textContent = formatDate(h.ts);
-    pillDate.style.fontSize = "12px";
-    pillDate.style.fontWeight = "800";
-    pillDate.style.color = "#6b7280";
-    pillDate.style.background = "#fff";
-    pillDate.style.border = "1px solid #e6e8ee";
-    pillDate.style.padding = "6px 10px";
-    pillDate.style.borderRadius = "999px";
-
-    sub.appendChild(pillItems);
-    sub.appendChild(pillDate);
-
-    left.appendChild(total);
-    left.appendChild(sub);
-
-    // Buttons
     const btns = document.createElement("div");
     btns.style.display = "flex";
     btns.style.gap = "8px";
@@ -420,7 +387,7 @@ function renderHistory() {
     const bRestore = document.createElement("button");
     bRestore.className = "btn add";
     bRestore.type = "button";
-    bRestore.textContent = "↩ Restaurar";
+    bRestore.textContent = "Restaurar";
     bRestore.addEventListener("click", () => {
       closeHistoryModal();
       restorePurchase(h.ts);
@@ -429,263 +396,350 @@ function renderHistory() {
     const bDel = document.createElement("button");
     bDel.className = "btn reset";
     bDel.type = "button";
-    bDel.textContent = "🗑 Borrar";
+    bDel.textContent = "Borrar";
     bDel.addEventListener("click", () => deleteHistoryItem(h.ts));
 
     btns.appendChild(bRestore);
     btns.appendChild(bDel);
 
-    header.appendChild(left);
-    header.appendChild(btns);
+    top.appendChild(left);
+    top.appendChild(btns);
 
-    const divider = document.createElement("div");
-    divider.style.height = "1px";
-    divider.style.background = "#eef0f5";
-    divider.style.margin = "12px 0";
-
-    // Details
     const det = document.createElement("details");
-    det.style.border = "1px solid #e6e8ee";
-    det.style.borderRadius = "14px";
-    det.style.background = "#f6f7f9";
-    det.style.padding = "10px 12px";
+    det.style.marginTop = "10px";
 
     const sum = document.createElement("summary");
+    sum.textContent = "Ver detalle";
     sum.style.cursor = "pointer";
-    sum.style.fontWeight = "900";
     sum.style.color = "#111";
-    sum.style.listStyle = "none";
-    sum.style.outline = "none";
-    sum.style.display = "flex";
-    sum.style.alignItems = "center";
-    sum.style.justifyContent = "space-between";
-
-    const sumLeft = document.createElement("span");
-    sumLeft.textContent = "Ver detalle";
-
-    const chevron = document.createElement("span");
-    chevron.textContent = "▾";
-    chevron.style.fontWeight = "900";
-    chevron.style.color = "#6b7280";
-
-    sum.appendChild(sumLeft);
-    sum.appendChild(chevron);
-
+    sum.style.fontWeight = "900";
     det.appendChild(sum);
-
-    det.addEventListener("toggle", () => {
-      chevron.textContent = det.open ? "▴" : "▾";
-    });
 
     const list = document.createElement("div");
     list.style.marginTop = "10px";
     list.style.display = "grid";
-    list.style.gap = "8px";
+    list.style.gap = "6px";
 
     (h.items || []).forEach(it => {
       const row = document.createElement("div");
       row.style.display = "flex";
       row.style.justifyContent = "space-between";
-      row.style.alignItems = "center";
       row.style.gap = "10px";
-      row.style.padding = "10px 10px";
-      row.style.borderRadius = "12px";
-      row.style.background = "#fff";
-      row.style.border = "1px solid #e6e8ee";
+      row.style.fontSize = "14px";
 
       const a = document.createElement("div");
-      a.style.minWidth = "0";
-
-      const n = document.createElement("div");
-      n.textContent = it.name;
-      n.style.fontWeight = "900";
-      n.style.whiteSpace = "nowrap";
-      n.style.overflow = "hidden";
-      n.style.textOverflow = "ellipsis";
-
-      const m = document.createElement("div");
-      m.textContent = `${it.qty}× ${it.price == null ? "—" : euro(Number(it.price))}`;
-      m.style.fontSize = "12px";
-      m.style.fontWeight = "800";
-      m.style.color = "#6b7280";
-      m.style.marginTop = "2px";
-
-      a.appendChild(n);
-      a.appendChild(m);
+      a.style.fontWeight = "900";
+      a.textContent = `${it.qty}× ${it.name}`;
 
       const b = document.createElement("div");
-      b.style.fontWeight = "900";
-      b.style.textAlign = "right";
-      b.style.minWidth = "88px";
+      b.style.fontWeight = "1000";
       b.textContent = (it.subtotal == null) ? "—" : euro(Number(it.subtotal));
 
       row.appendChild(a);
       row.appendChild(b);
-
       list.appendChild(row);
     });
 
     det.appendChild(list);
 
-    wrap.appendChild(header);
-    wrap.appendChild(divider);
+    wrap.appendChild(top);
     wrap.appendChild(det);
 
     el.historyList.appendChild(wrap);
   });
 }
 
+// ---------- PDF (simple) ----------
+function buildPrintHtml() {
+  const { total } = computeTotals();
 
-// ---------- Render (fila clicable + qty en catálogo cuando está marcado) ----------
+  const pending = [];
+  const bought = [];
+
+  for (const p of catalog) {
+    const id = String(p.id);
+    if (!isChecked(id)) continue;
+
+    const qty = getQty(id);
+    const price = getPriceFor(id, p);
+    const line = {
+      name: p.name,
+      qty,
+      price,
+      subtotal: (price == null) ? null : Math.round(price * qty * 100) / 100,
+      done: isDone(id)
+    };
+
+    (line.done ? bought : pending).push(line);
+  }
+
+  const rows = (arr) => arr.map(x => `
+    <tr>
+      <td style="width:34px">[ ]</td>
+      <td><b>${x.name}</b><br><span style="color:#666;font-size:12px">Unidades: ${x.qty}${x.price==null ? "" : ` · Precio: ${euro(x.price)} · Subtotal: ${euro(x.subtotal)}`}</span></td>
+    </tr>
+  `).join("");
+
+  const now = formatDate(Date.now());
+
+  return `
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Lista de la compra</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:24px;color:#111}
+  h1{margin:0 0 6px 0}
+  .meta{color:#666;font-size:12px;margin-bottom:16px}
+  .total{font-size:18px;font-weight:900;margin:10px 0 18px 0}
+  table{width:100%;border-collapse:collapse}
+  tr{border-top:1px solid #e6e8ee}
+  tr:first-child{border-top:0}
+  td{padding:10px 0;vertical-align:top}
+  h2{margin:18px 0 10px 0;font-size:14px;color:#666;text-transform:uppercase;letter-spacing:.3px}
+</style>
+</head>
+<body>
+  <h1>Lista de la compra</h1>
+  <div class="meta">${now}</div>
+  <div class="total">Total estimado: ${euro(total)}</div>
+
+  <h2>Pendiente</h2>
+  <table>${rows(pending)}</table>
+
+  ${bought.length ? `<h2>Comprado</h2><table>${rows(bought)}</table>` : ""}
+
+  <script>window.onload = () => window.print();</script>
+</body></html>`;
+}
+
+function printPdf() {
+  const html = buildPrintHtml();
+  const w = window.open("", "_blank");
+  if (!w) { alert("Bloqueado por el navegador. Permite popups para imprimir."); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+// ---------- Render ----------
+function renderSectionTitle(text) {
+  const li = document.createElement("li");
+  li.className = "sectionTitle";
+  li.textContent = text;
+  return li;
+}
+
+function renderItem(p, { superMode }) {
+  const id = String(p.id);
+  const checked = isChecked(id);
+  const qty = getQty(id);
+
+  const price = getPriceFor(id, p);
+  const hasPrice = price != null && Number.isFinite(price);
+
+  const done = isDone(id);
+
+  const li = document.createElement("li");
+  li.className = "item" + (done ? " done" : "");
+
+  const left = document.createElement("div");
+  left.className = "left";
+
+  // checkbox: en super = comprado; en catalogo = seleccionar compra
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.className = "cb";
+
+  if (superMode) cb.checked = done;
+  else cb.checked = checked;
+
+  cb.addEventListener("change", () => {
+    if (superMode) {
+      setDone(id, cb.checked);
+    } else {
+      setChecked(id, cb.checked);
+    }
+    saveState();
+    render();
+  });
+
+  const textWrap = document.createElement("div");
+  textWrap.className = "text";
+
+  const name = document.createElement("div");
+  name.className = "name";
+  name.textContent = p.name;
+
+  if (superMode && done) name.classList.add("checked");
+  if (!superMode && checked) name.classList.add("checked");
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = checked ? `Unidades: ${qty}` : "En catálogo";
+
+  textWrap.appendChild(name);
+  textWrap.appendChild(meta);
+
+  left.appendChild(cb);
+  left.appendChild(textWrap);
+
+  const right = document.createElement("div");
+  right.className = "right";
+
+  const priceTag = document.createElement("button");
+  priceTag.type = "button";
+  priceTag.className = "priceTag" + (!hasPrice ? " missing" : "");
+  priceTag.textContent = hasPrice ? euro(price) : "—";
+  priceTag.title = "Tocar para editar precio";
+  priceTag.addEventListener("click", (ev) => { ev.stopPropagation(); openPriceModal(p); });
+  right.appendChild(priceTag);
+
+  // qty controls: en super siempre; en catalogo solo si marcado
+  const showQtyControls = superMode || (mode === "catalog" && checked);
+  if (showQtyControls) {
+    const controls = document.createElement("div");
+    controls.className = "qtyControls";
+
+    const btnMinus = document.createElement("button");
+    btnMinus.type = "button";
+    btnMinus.className = "qtyBtn";
+    btnMinus.textContent = "−";
+    btnMinus.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const current = getQty(id);
+      const next = current - 1;
+
+      if (next <= 0) {
+        setChecked(id, false);
+        delete state.qty[id];
+      } else {
+        setQty(id, next);
+      }
+      saveState();
+      render();
+    });
+
+    const qtyVal = document.createElement("div");
+    qtyVal.className = "qtyVal";
+    qtyVal.textContent = String(getQty(id));
+
+    const btnPlus = document.createElement("button");
+    btnPlus.type = "button";
+    btnPlus.className = "qtyBtn";
+    btnPlus.textContent = "+";
+    btnPlus.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (!isChecked(id)) setChecked(id, true);
+      setQty(id, getQty(id) + 1);
+      saveState();
+      render();
+    });
+
+    controls.appendChild(btnMinus);
+    controls.appendChild(qtyVal);
+    controls.appendChild(btnPlus);
+
+    right.appendChild(controls);
+
+    if (superMode) {
+      const subtotal = document.createElement("div");
+      subtotal.className = "subtotal";
+      subtotal.textContent = hasPrice ? euro(price * getQty(id)) : "—";
+      right.appendChild(subtotal);
+
+      // botón quitar de la compra
+      const btnRemove = document.createElement("button");
+      btnRemove.type = "button";
+      btnRemove.className = "btnTiny danger";
+      btnRemove.textContent = "🗑";
+      btnRemove.title = "Quitar de la compra";
+      btnRemove.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        setChecked(id, false);
+        saveState();
+        render();
+      });
+      right.appendChild(btnRemove);
+
+      meta.textContent = `Unidades: ${getQty(id)}` + (done ? " · Comprado" : " · Pendiente");
+    } else {
+      meta.textContent = checked ? `Unidades: ${getQty(id)}` : "En catálogo";
+    }
+  }
+
+  li.appendChild(left);
+  li.appendChild(right);
+
+  // click fila: en catálogo alterna selección; en súper alterna comprado
+  li.addEventListener("click", (ev) => {
+    const tag = (ev.target?.tagName || "").toUpperCase();
+    if (tag === "BUTTON" || tag === "INPUT" || tag === "A" || tag === "SUMMARY") return;
+
+    if (superMode) {
+      setDone(id, !isDone(id));
+    } else {
+      setChecked(id, !isChecked(id));
+    }
+    saveState();
+    render();
+  });
+
+  return li;
+}
+
 function render() {
   if (!el.list) return;
 
   updateHeader();
 
   const q = norm(el.search?.value || "");
-  let items = catalog;
 
+  // catálogo = todos, súper = solo seleccionados
+  let items = catalog;
   if (mode === "super") items = items.filter(p => isChecked(String(p.id)));
   if (q) items = items.filter(p => matchesSearch(p, q));
 
   el.list.innerHTML = "";
 
-  if (mode === "super" && items.length === 0) {
+  if (mode === "super") {
+    const pending = items.filter(p => !isDone(String(p.id)));
+    const bought = items.filter(p => isDone(String(p.id)));
+
+    el.list.appendChild(renderSectionTitle(`Pendiente (${pending.length})`));
+    if (pending.length === 0) {
+      const li = document.createElement("li");
+      li.className = "item";
+      li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada pendiente</div><div class="meta">Marca algo en catálogo o restaura una compra</div></div></div>`;
+      el.list.appendChild(li);
+    } else {
+      pending.forEach(p => el.list.appendChild(renderItem(p, { superMode:true })));
+    }
+
+    if (!hideBought) {
+      el.list.appendChild(renderSectionTitle(`Comprado (${bought.length})`));
+      if (bought.length === 0) {
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada comprado aún</div><div class="meta">Marca los productos conforme los vayas metiendo al carro</div></div></div>`;
+        el.list.appendChild(li);
+      } else {
+        bought.forEach(p => el.list.appendChild(renderItem(p, { superMode:true })));
+      }
+    }
+
+    return;
+  }
+
+  // modo catálogo
+  if (items.length === 0) {
     const li = document.createElement("li");
-    li.className = "empty";
-    li.textContent = "No hay productos marcados.";
+    li.className = "item";
+    li.innerHTML = `<div class="left"><div class="text"><div class="name">Sin resultados</div><div class="meta">Prueba otra búsqueda</div></div></div>`;
     el.list.appendChild(li);
     return;
   }
 
-  for (const p of items) {
-    const id = String(p.id);
-    const checked = isChecked(id);
-    const qty = getQty(id);
-
-    const price = getPriceFor(id, p);
-    const hasPrice = price != null && Number.isFinite(price);
-
-    const li = document.createElement("li");
-    li.className = "item";
-
-    // Tap en la fila (excepto botones/inputs) => marcar/desmarcar
-    li.addEventListener("click", (ev) => {
-      const target = ev.target;
-      const tag = (target?.tagName || "").toUpperCase();
-      if (tag === "BUTTON" || tag === "INPUT" || tag === "A" || tag === "SUMMARY") return;
-
-      setChecked(id, !isChecked(id));
-      if (isChecked(id) && !state.qty[id]) state.qty[id] = 1;
-      saveState();
-      render();
-    });
-
-    const left = document.createElement("div");
-    left.className = "left";
-
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.className = "cb";
-    cb.checked = checked;
-    cb.addEventListener("change", () => {
-      setChecked(id, cb.checked);
-      saveState();
-      render();
-    });
-
-    const textWrap = document.createElement("div");
-    textWrap.className = "text";
-
-    const name = document.createElement("div");
-    name.className = "name";
-    name.textContent = p.name;
-    if (checked) name.classList.add("checked");
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    meta.textContent = checked ? `Unidades: ${qty}` : "En catálogo";
-
-    textWrap.appendChild(name);
-    textWrap.appendChild(meta);
-
-    left.appendChild(cb);
-    left.appendChild(textWrap);
-
-    const right = document.createElement("div");
-    right.className = "right";
-
-    const priceTag = document.createElement("button");
-    priceTag.type = "button";
-    priceTag.className = "priceTag";
-    priceTag.textContent = hasPrice ? euro(price) : "—";
-    if (!hasPrice) priceTag.classList.add("missing");
-    priceTag.title = "Tocar para editar precio";
-    priceTag.addEventListener("click", () => openPriceModal(p));
-    right.appendChild(priceTag);
-
-    // Controles: en súper siempre; en catálogo solo si está marcado
-    const showQtyControls = (mode === "super") || (mode === "catalog" && checked);
-
-    if (showQtyControls) {
-      const controls = document.createElement("div");
-      controls.className = "qtyControls";
-
-      const btnMinus = document.createElement("button");
-      btnMinus.type = "button";
-      btnMinus.className = "qtyBtn";
-      btnMinus.textContent = "−";
-      btnMinus.addEventListener("click", () => {
-        const current = getQty(id);
-        const next = current - 1;
-
-        if (next <= 0) {
-          setChecked(id, false);
-          delete state.qty[id];
-        } else {
-          setQty(id, next);
-        }
-
-        saveState();
-        render();
-      });
-
-      const qtyVal = document.createElement("div");
-      qtyVal.className = "qtyVal";
-      qtyVal.textContent = String(getQty(id));
-
-      const btnPlus = document.createElement("button");
-      btnPlus.type = "button";
-      btnPlus.className = "qtyBtn";
-      btnPlus.textContent = "+";
-      btnPlus.addEventListener("click", () => {
-        if (!isChecked(id)) setChecked(id, true);
-        setQty(id, getQty(id) + 1);
-        saveState();
-        render();
-      });
-
-      controls.appendChild(btnMinus);
-      controls.appendChild(qtyVal);
-      controls.appendChild(btnPlus);
-
-      right.appendChild(controls);
-
-      if (mode === "super") {
-        const subtotal = document.createElement("div");
-        subtotal.className = "subtotal";
-        subtotal.textContent = hasPrice ? euro(price * getQty(id)) : "—";
-        right.appendChild(subtotal);
-        meta.textContent = `Unidades: ${getQty(id)}`;
-      } else {
-        meta.textContent = `Unidades: ${getQty(id)}`;
-      }
-    }
-
-    li.appendChild(left);
-    li.appendChild(right);
-    el.list.appendChild(li);
-  }
+  items.forEach(p => el.list.appendChild(renderItem(p, { superMode:false })));
 }
 
 // ---------- Load catalog ----------
@@ -718,12 +772,12 @@ async function loadCatalog() {
   }
 }
 
-// ---------- Wire UI (SIN CAMBIAR LO DEMÁS, solo btnSaveAdd actualizado) ----------
+// ---------- Wire UI ----------
 function wireUI() {
   document.addEventListener("click", (e) => {
     const t = e.target;
 
-    if (t && (t.id === "tabCatalogo" || t.id === "tabCatalog")) { e.preventDefault(); setMode("catalog"); return; }
+    if (t && t.id === "tabCatalogo") { e.preventDefault(); setMode("catalog"); return; }
     if (t && t.id === "tabSuper") { e.preventDefault(); setMode("super"); return; }
 
     if (t && t.id === "btnReset") {
@@ -731,18 +785,15 @@ function wireUI() {
       if (!confirm("¿Desmarcar todo?")) return;
       state.checked = {};
       state.qty = {};
+      state.done = {};
       saveState();
       setMode("catalog");
       return;
     }
 
-    // (si tienes micro, lo mantienes; si no, puedes borrar este if)
-    if (t && t.id === "btnMic") { e.preventDefault(); /* runVoice(); */ return; }
-
     if (t && t.id === "btnAdd") { e.preventDefault(); openAddModal(); return; }
     if (t && t.id === "btnCloseAdd") { e.preventDefault(); closeAddModal(); return; }
 
-    // ✅ AQUÍ VA TU CAMBIO: btnSaveAdd con qty + price
     if (t && t.id === "btnSaveAdd") {
       e.preventDefault();
 
@@ -790,17 +841,21 @@ function wireUI() {
       return;
     }
 
-    // Historial
     if (t && t.id === "btnHistory") { e.preventDefault(); openHistoryModal(); return; }
     if (t && t.id === "btnCloseHistory") { e.preventDefault(); closeHistoryModal(); return; }
     if (t && t.id === "btnClearHistory") { e.preventDefault(); clearHistory(); return; }
 
-    // Finalizar compra
     if (t && t.id === "btnFinish") { e.preventDefault(); finalizePurchase(); return; }
+    if (t && t.id === "btnPdf") { e.preventDefault(); printPdf(); return; }
 
   }, true);
 
   el.search?.addEventListener("input", () => render());
+
+  el.toggleHideBought?.addEventListener("change", () => {
+    hideBought = !!el.toggleHideBought.checked;
+    render();
+  });
 
   el.addModal?.addEventListener("click", (e) => { if (e.target === el.addModal) closeAddModal(); });
   el.priceModal?.addEventListener("click", (e) => { if (e.target === el.priceModal) closePriceModal(); });
@@ -815,7 +870,7 @@ function wireUI() {
   try {
     await loadCatalog();
   } catch {
-    alert("No se pudo cargar products.json. Asegúrate de abrir con Live Server y que products.json está al lado de index.html.");
+    alert("No se pudo cargar products.json.");
     return;
   }
 

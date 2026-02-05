@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lista compra (local)</title>
+  <title>Lista compra</title>
   <link rel="stylesheet" href="assets/app.css" />
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
@@ -12,7 +12,7 @@
   <div class="app">
     <div class="topbar">
       <div class="title">
-        <h1>🛒LISTA DE LA COMPRA🛒</h1>
+        <h1>🛒 LISTA DE LA COMPRA</h1>
         <div class="badge" id="badge">Cargando…</div>
       </div>
 
@@ -21,31 +21,47 @@
         <button class="tab" id="tabSuper" type="button">Modo súper</button>
       </div>
 
-      <!-- Botones SIN dictado -->
       <div class="actionsBar">
-        <button class="btn icon reset" id="btnReset" type="button">🧹 Reset</button>
-        <button class="btn icon add" id="btnAdd" type="button">➕ Añadir</button>
-        <button class="btn icon history" id="btnHistory" type="button">🧾 Historial</button>
+        <button class="btn reset icon" id="btnReset" type="button">🧹 Reset</button>
+        <button class="btn add icon" id="btnAdd" type="button">➕ Añadir</button>
+        <button class="btn history icon" id="btnHistory" type="button">🧾 Historial</button>
       </div>
 
       <input class="search" id="search" type="text" placeholder="Buscar…" />
+
+      <!-- Solo visible en modo súper -->
+      <div class="superTools" id="superTools" style="display:none;">
+        <label class="chip">
+          <input type="checkbox" id="toggleHideBought" />
+          Ocultar comprados
+        </label>
+      </div>
     </div>
 
     <div class="content">
+      <!-- Total (solo modo súper) -->
       <div class="totalBig" id="totalBox" style="display:none;">
         <div class="label">Total estimado</div>
         <div class="value" id="totalValue">0,00 €</div>
-      </div>
-
-      <!-- Botón finalizar (solo en modo súper) -->
-      <div id="finishRow" style="display:none; margin-bottom:12px;">
-        <button class="btn primary" id="btnFinish" type="button" style="width:100%;">✅ Finalizar compra</button>
       </div>
 
       <div class="card">
         <ul class="list" id="list"></ul>
       </div>
     </div>
+
+    <!-- Sticky footer (solo modo súper) -->
+    <div class="superFooter" id="superFooter" style="display:none;">
+      <div class="superFooterLeft">
+        <div class="superFooterLabel">Total</div>
+        <div class="superFooterValue" id="footerTotal">0,00 €</div>
+      </div>
+      <div class="superFooterRight">
+        <button class="btn ghost" id="btnPdf" type="button">📄 PDF</button>
+        <button class="btn primary" id="btnFinish" type="button">✅ Finalizar</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Modal Añadir -->
@@ -66,7 +82,7 @@
         <button class="btn primary" id="btnSaveAdd" type="button">Guardar y marcar</button>
       </div>
 
-      <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
+      <div class="hint" style="margin-top:10px;">
         Si pones cantidad y precio, se marca directamente y se suma al total del modo súper.
       </div>
     </div>
@@ -85,7 +101,7 @@
         <button class="btn primary" id="btnSavePrice" type="button">Guardar</button>
       </div>
 
-      <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
+      <div class="hint" style="margin-top:10px;">
         Deja vacío para “sin precio”.
       </div>
     </div>
@@ -100,28 +116,18 @@
       </div>
 
       <div style="display:flex; gap:8px; margin-top:12px;">
-        <button class="btn" id="btnClearHistory" type="button" style="flex:1;">Borrar historial</button>
+        <button class="btn reset" id="btnClearHistory" type="button" style="flex:1;">Borrar historial</button>
       </div>
 
       <div id="historyList" style="margin-top:12px;"></div>
 
-      <div class="hint" style="margin-top:10px;color:#666;font-size:12px">
-        Tip: “Finalizar compra” guarda el total y el detalle. Puedes “Restaurar” una compra para volver a marcar lo mismo.
+      <div class="hint" style="margin-top:10px;">
+        “Finalizar” guarda total + detalle. Puedes “Restaurar” una compra para volver a marcar lo mismo.
       </div>
     </div>
   </div>
 
   <script src="assets/db.js"></script>
   <script src="assets/app.js"></script>
-
-  <script>
-    // Si ya lo tienes funcionando, déjalo así.
-    // Si quieres activar SW desde aquí: descomenta.
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        // navigator.serviceWorker.register("./sw.js").catch(console.error);
-      });
-    }
-  </script>
 </body>
 </html>
