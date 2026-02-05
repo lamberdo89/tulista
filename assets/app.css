@@ -398,157 +398,123 @@ body{
   .priceTag{ min-width:78px; }
 }
 
-/* ==============================
-   FIX MOBILE SOLO PARA MODO SÚPER
-   (evita que la derecha se salga)
-   ============================== */
+/* =========================================================
+   OVERRIDES ÚNICOS (evita solapamientos) · ÚLTIMO DEL ARCHIVO
+   ========================================================= */
+
+/* 1) MODO SÚPER: pantalla limpia (sin acciones ni buscador ni total central) */
+body.mode-super .actionsBar{ display:none !important; }
+body.mode-super #search{ display:none !important; }
+body.mode-super #totalBox{ display:none !important; }
+
+/* 2) MODO SÚPER: filas compactas y en 1 “línea visual”
+      - nombre permite 2 líneas
+      - controles siempre a la derecha
+      - sin meta “Unidades/Pendiente”
+*/
 body.mode-super .item{
-  flex-wrap: wrap;
-  align-items: flex-start;
-}
-body.mode-super .left{
-  flex: 1 1 100%;
-  min-width: 0;
-}
-body.mode-super .right{
-  flex: 1 1 100%;
-  width: 100%;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-body.mode-super .priceTag,
-body.mode-super .subtotal{
-  min-width: 0;
-}
-@media (max-width: 420px){
-  body.mode-super .priceTag{
-    padding: 8px 10px;
-    border-radius: 12px;
-    font-size: 16px;
-  }
-  body.mode-super .qtyBtn{
-    padding: 10px 12px;
-  }
-  body.mode-super .qtyVal{
-    min-width: 28px;
-  }
-  body.mode-super .btnTiny{
-    padding: 8px 10px;
-    border-radius: 12px;
-  }
-}
-
-/* En modo súper: fuera precio unitario (pill), solo qty + subtotal */
-body.mode-super .priceTag{
-  display:none !important;
-}
-
-/* =========================
-   CATÁLOGO más compacto
-   ========================= */
-body.mode-catalog .item{
-  padding: 8px 12px !important;
-  gap: 10px !important;
-}
-body.mode-catalog .left{
-  gap: 10px !important;
-}
-body.mode-catalog .name{
-  font-size: 16px !important;
-}
-body.mode-catalog .meta{
-  font-size: 12px !important;
-  margin-top: 2px !important;
-}
-body.mode-catalog .right{
-  gap: 8px !important;
-}
-body.mode-catalog .cb{
-  width: 20px !important;
-  height: 20px !important;
-}
-
-/* ============================
-   MODO SÚPER: pantalla limpia
-   ============================ */
-
-/* Oculta barra de acciones (Reset/Añadir/Historial) */
-body.mode-super .actionsBar{
-  display:none !important;
-}
-
-/* Oculta buscador */
-body.mode-super #search{
-  display:none !important;
-}
-
-/* Oculta total “del medio” */
-body.mode-super #totalBox{
-  display:none !important;
-}
-
-/* (Opcional) reduce un poco el alto del topbar al quitar cosas */
-body.mode-super .topbar{
-  padding-bottom: 10px;
-}
-
-/* ===== MODO SÚPER: cada producto en UNA SOLA LÍNEA (compacto) ===== */
-
-/* En súper, NO hacemos wrap (adiós espacios en blanco) */
-body.mode-super .item{
+  display:flex !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
   padding: 10px 12px !important;
 }
 
-/* Izquierda y derecha en la misma fila */
 body.mode-super .left{
   flex: 1 1 auto !important;
+  min-width: 0 !important;
 }
 
-body.mode-super .right{
-  flex: 0 0 auto !important;
-  width: auto !important;
-  justify-content: flex-end !important;
-  flex-wrap: nowrap !important;
-  gap: 10px !important;
-}
-
-/* Evitar que el nombre/meta empujen demasiado */
 body.mode-super .text{
   min-width: 0 !important;
 }
-body.mode-super .name{
-  max-width: 340px; /* ajusta si quieres */
+
+body.mode-super .meta{
+  display:none !important;
 }
 
-/* Controles más compactos */
+/* Nombre: 2 líneas máximo, más pequeño */
+body.mode-super .name{
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+
+  white-space: normal !important;
+  overflow: hidden !important;
+
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+/* Derecha: pegada al borde derecho, sin ocupar 100% */
+body.mode-super .right{
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin-left: auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+}
+
+/* En súper ocultamos el precio unitario (ya lo haces, lo reafirmo) */
+body.mode-super .priceTag{ display:none !important; }
+
+/* Controles compactos */
 body.mode-super .qtyControls{
   border-radius: 12px !important;
 }
-body.mode-super .qtyBtn,
-body.mode-super .qtyVal{
+body.mode-super .qtyBtn{
   padding: 8px 10px !important;
+  font-size: 16px !important;
 }
 body.mode-super .qtyVal{
+  padding: 8px 10px !important;
   min-width: 26px !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
 }
 
-/* Subtotal alineado y sin “pill” raro */
+/* Subtotal compacto */
 body.mode-super .subtotal{
-  min-width: 86px !important;
+  min-width: auto !important;
+  white-space: nowrap !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
 }
 
-/* Botón basura compacto */
+/* Papelera compacta */
 body.mode-super .btnTiny{
-  padding: 8px 10px !important;
-  border-radius: 12px !important;
+  padding: 6px 8px !important;
+  border-radius: 10px !important;
 }
 
-/* En móviles muy pequeños, permite 2 líneas SOLO si no cabe */
+/* 3) MÓVIL MUY PEQUEÑO: si no cabe, permitimos que baje la derecha a otra línea */
 @media (max-width: 360px){
   body.mode-super .item{ flex-wrap: wrap !important; }
-  body.mode-super .right{ width: 100% !important; }
-  body.mode-super .subtotal{ text-align: right !important; }
+  body.mode-super .right{ width: 100% !important; justify-content: flex-end !important; }
+}
+
+body.mode-catalog .name.checked{
+  opacity: 1 !important;
+  text-decoration: none !important;
+}
+body.mode-catalog .meta{
+  font-weight: 800;
+}
+body.mode-catalog .meta.added{
+  color:#111;
+}
+body.mode-catalog .meta.added .pill{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#f6f7f9;
+  margin-right:6px;
+  font-weight:900;
+  font-size:12px;
 }
