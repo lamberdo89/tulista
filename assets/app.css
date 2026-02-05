@@ -555,3 +555,298 @@ body.mode-catalog .item.selected{
 body.mode-catalog .item:not(.selected):hover{
   background:#fafafa;
 }
+
+/* =========================
+   HISTORIAL · UI 2026
+   ========================= */
+
+.historyCard{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.historyTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.historyMain{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+
+.historyTitle{
+  font-weight:1000;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.historyNumbers{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.historyTotal{
+  font-weight:1000;
+  font-size:22px;
+  letter-spacing:.2px;
+}
+
+.historyCount{
+  font-weight:900;
+  font-size:13px;
+  color:var(--muted);
+  background:var(--pill);
+  border:1px solid var(--line);
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+.historyDate{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.historyActions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex:0 0 auto;
+}
+
+.btn.small{
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:900;
+}
+
+.btn.view{
+  background:#f6f7f9;
+  border-color:var(--line);
+}
+
+.btn.delete{
+  background:var(--red-bg);
+  border-color:var(--red-bd);
+  color:var(--red-tx);
+}
+
+.historyDetails{
+  border-top:1px solid #eef0f5;
+  padding-top:10px;
+  display:none;
+}
+
+.historyDetails.on{
+  display:block;
+}
+
+.historyRow{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:14px;
+  padding:6px 0;
+}
+
+.historyRowName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.historyRowPrice{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* =========================
+   HISTORIAL + STATS (2026 UI)
+   PÉGALO AL FINAL de assets/app.css
+   ========================= */
+
+/* Tarjetas historial */
+.historyCard{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  padding:12px;
+  margin-bottom:10px;
+}
+
+.historyTop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.historyMain{ min-width:0; flex:1; }
+
+.historyTitle{
+  font-size:12px;
+  font-weight:1000;
+  color:var(--muted);
+  letter-spacing:.2px;
+  text-transform:uppercase;
+}
+
+.historyNumbers{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin-top:4px;
+  flex-wrap:wrap;
+}
+
+.historyTotal{
+  font-size:22px;
+  font-weight:1000;
+  line-height:1.1;
+  color:#111;
+}
+
+.historyCount{
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted);
+  padding:6px 10px;
+  border:1px solid #eef0f5;
+  background:#fafbfc;
+  border-radius:999px;
+}
+
+.historyDate{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+}
+
+/* Acciones */
+.historyActions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.btn.small{
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:1000;
+  font-size:12px;
+}
+
+.btn.small.view{
+  background:#f6f7f9;
+}
+
+.btn.small.delete{
+  background:var(--red-bg);
+  border-color:var(--red-bd);
+  color:var(--red-tx);
+}
+
+/* Detalle desplegable */
+.historyDetails{
+  display:none;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid #eef0f5;
+}
+.historyDetails.on{ display:block; }
+
+.historyRow{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 0;
+  border-top:1px dashed #eef0f5;
+}
+.historyRow:first-child{ border-top:0; }
+
+.historyRowName{
+  font-size:14px;
+  font-weight:900;
+  color:#111;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.historyRowPrice{
+  font-size:14px;
+  font-weight:1000;
+  color:#111;
+  white-space:nowrap;
+}
+
+/* =========================
+   MODAL (genérico) — para Stats si lo usas
+   ========================= */
+.modal .modalHeader .btn{
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:1000;
+}
+
+/* Stats cards dentro del modal (si usas estilos inline, esto igual no afecta) */
+.statsGrid{
+  display:grid;
+  gap:10px;
+}
+.statsCard{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  background:#fff;
+}
+.statsCardTitle{
+  font-weight:1000;
+  margin-bottom:8px;
+}
+.statsRow{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:10px;
+}
+.statsKpi{
+  border:1px solid #eef0f5;
+  border-radius:14px;
+  padding:10px;
+  background:#fafbfc;
+}
+.statsKpiLabel{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:900;
+}
+.statsKpiValue{
+  font-size:18px;
+  font-weight:1000;
+  margin-top:2px;
+}
+
+/* Responsive */
+@media (max-width:420px){
+  .historyTop{ align-items:flex-start; }
+  .historyTotal{ font-size:20px; }
+  .historyActions{ gap:6px; }
+  .btn.small{ width:auto; }
+  .statsRow{ grid-template-columns: 1fr; }
+}

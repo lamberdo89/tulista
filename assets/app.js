@@ -20,6 +20,8 @@ let state = {
 let localProducts = [];
 let editingPriceProductId = null;
 
+let hideBought = false;
+
 // ---------- Utils ----------
 function euro(n) {
   if (n == null || Number.isNaN(n)) return "—";
@@ -50,6 +52,39 @@ function formatDate(ts) {
   });
 }
 
+// Fechas stats
+function startOfMonthTs() {
+  const d = new Date();
+  d.setDate(1);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+function sumHistoryBetween(tsFrom, tsTo) {
+  const history = loadHistory();
+  let compras = 0;
+  let total = 0;
+  let productos = 0;
+
+  for (const h of history) {
+    const ts = Number(h.ts);
+    if (!Number.isFinite(ts)) continue;
+    if (ts < tsFrom || ts >= tsTo) continue;
+    compras += 1;
+    total += Number(h.total) || 0;
+    productos += Number(h.count) || 0;
+  }
+
+  const media = compras > 0 ? (total / compras) : 0;
+
+  return {
+    compras,
+    total: Math.round(total * 100) / 100,
+    productos,
+    media: Math.round(media * 100) / 100
+  };
+}
+
+// ---------- Storage ----------
 function loadState() {
   const saved = window.LocalDB.get(STATE_KEY, null);
   if (saved && typeof saved === "object") {
@@ -77,12 +112,12 @@ function saveHistory(h) {
   window.LocalDB.set(HISTORY_KEY, h);
 }
 
+// ---------- State helpers ----------
 function isChecked(id) { return !!state.checked[id]; }
 function setChecked(id, v) {
   state.checked[id] = !!v;
   if (state.checked[id] && !state.qty[id]) state.qty[id] = 1;
   if (!state.checked[id]) {
-    // si lo quitas de la compra, también quita “comprado”
     delete state.done[id];
   }
 }
@@ -117,7 +152,6 @@ function computeTotals() {
     const id = String(p.id);
     if (!isChecked(id)) continue;
     marked++;
-
     const q = getQty(id);
     units += q;
 
@@ -126,7 +160,6 @@ function computeTotals() {
 
     total += price * q;
   }
-
   return { marked, units, total };
 }
 
@@ -170,16 +203,18 @@ const el = {
   historyList: document.getElementById("historyList"),
   btnCloseHistory: document.getElementById("btnCloseHistory"),
   btnClearHistory: document.getElementById("btnClearHistory"),
+
+  btnStats: document.getElementById("btnStats"),
+  statsModal: document.getElementById("statsModal"),
+  statsBody: document.getElementById("statsBody"),
+  btnCloseStats: document.getElementById("btnCloseStats"),
 };
 
-let hideBought = false;
-
 // ---------- UI helpers ----------
-// ✅ setMode (editado para “modo súper limpio”)
 function setMode(newMode) {
   mode = newMode;
 
-  // clases para CSS (body.mode-super / body.mode-catalog)
+  // body classes para CSS
   document.body.classList.toggle("mode-super", mode === "super");
   document.body.classList.toggle("mode-catalog", mode === "catalog");
 
@@ -187,7 +222,7 @@ function setMode(newMode) {
   if (el.tabCatalog) el.tabCatalog.classList.toggle("on", mode === "catalog");
   if (el.tabSuper) el.tabSuper.classList.toggle("on", mode === "super");
 
-  // ✅ en modo súper NO queremos buscador
+  // buscador: solo catálogo
   if (el.search) {
     if (mode === "super") {
       el.search.value = "";
@@ -197,19 +232,15 @@ function setMode(newMode) {
     }
   }
 
-  // ✅ en modo súper NO queremos total “del medio”
-  if (el.totalBox) el.totalBox.style.display = "none";
+  // totalBox: solo si lo usas en catálogo (si quieres, déjalo oculto siempre)
+  if (el.totalBox) el.totalBox.style.display = (mode === "catalog") ? "" : "none";
 
-  // ✅ en modo súper NO queremos la barra de acciones (Reset/Añadir/Historial)
+  // actionsBar: solo catálogo
   const actionsBar = document.querySelector(".actionsBar");
   if (actionsBar) actionsBar.style.display = (mode === "super") ? "none" : "";
 
-  // ✅ footer (barra inferior) solo en modo súper
-  const superFooter = document.querySelector(".superFooter");
-  if (superFooter) superFooter.style.display = (mode === "super") ? "" : "none";
-
-  // finalizar compra (si aún lo usas)
-  if (el.finishRow) el.finishRow.style.display = (mode === "super") ? "" : "none";
+  // footer: solo super
+  if (el.superFooter) el.superFooter.style.display = (mode === "super") ? "" : "none";
 
   render();
 }
@@ -260,6 +291,16 @@ function closeHistoryModal() {
   el.historyModal.style.display = "none";
 }
 
+function openStatsModal() {
+  if (!el.statsModal) return;
+  el.statsModal.style.display = "flex";
+  renderStats();
+}
+function closeStatsModal() {
+  if (!el.statsModal) return;
+  el.statsModal.style.display = "none";
+}
+
 function matchesSearch(p, q) {
   if (!q) return true;
   return norm(p.name).includes(q);
@@ -300,13 +341,7 @@ function buildCurrentPurchaseSnapshot() {
 
     if (subtotal != null) total += subtotal;
 
-    items.push({
-      id: p.id,
-      name: p.name,
-      qty,
-      price,
-      subtotal
-    });
+    items.push({ id: p.id, name: p.name, qty, price, subtotal });
   }
 
   return {
@@ -337,29 +372,6 @@ function finalizePurchase() {
   openHistoryModal();
 }
 
-function restorePurchase(ts) {
-  const history = loadHistory();
-  const found = history.find(h => String(h.ts) === String(ts));
-  if (!found) return;
-
-  state.checked = {};
-  state.qty = {};
-  state.done = {};
-
-  for (const it of found.items) {
-    let p = catalog.find(x => String(x.id) === String(it.id)) || findByName(it.name);
-    if (!p) p = createLocalProduct(it.name);
-
-    const id = String(p.id);
-    setChecked(id, true);
-    setQty(id, Math.max(1, it.qty || 1));
-    if (it.price != null) state.priceOverride[id] = it.price;
-  }
-
-  saveState();
-  setMode("super");
-}
-
 function deleteHistoryItem(ts) {
   const history = loadHistory().filter(h => String(h.ts) !== String(ts));
   saveHistory(history);
@@ -377,102 +389,154 @@ function renderHistory() {
 
   const history = loadHistory();
   if (history.length === 0) {
-    el.historyList.innerHTML = `<div class="hint">No hay compras guardadas aún.</div>`;
+    el.historyList.innerHTML = `
+      <div class="hint" style="margin-top:12px">
+        Aún no hay compras guardadas. En modo súper pulsa <b>Finalizar compra</b>.
+      </div>`;
     return;
   }
 
   el.historyList.innerHTML = "";
 
   history.forEach(h => {
-    const wrap = document.createElement("div");
-    wrap.style.border = "1px solid #e6e8ee";
-    wrap.style.borderRadius = "16px";
-    wrap.style.padding = "12px";
-    wrap.style.marginBottom = "10px";
-    wrap.style.background = "#fff";
+    const card = document.createElement("div");
+    card.className = "historyCard";
 
     const top = document.createElement("div");
-    top.style.display = "flex";
-    top.style.justifyContent = "space-between";
-    top.style.gap = "10px";
-    top.style.alignItems = "center";
+    top.className = "historyTop";
 
-    const left = document.createElement("div");
-    left.innerHTML = `
-      <div style="font-weight:1000;font-size:16px">Total: ${euro(Number(h.total) || 0)}</div>
-      <div style="color:#6b7280;font-size:12px;font-weight:900">Productos: ${h.count} · ${formatDate(h.ts)}</div>
-    `;
+    const main = document.createElement("div");
+    main.className = "historyMain";
 
-    const btns = document.createElement("div");
-    btns.style.display = "flex";
-    btns.style.gap = "8px";
-    btns.style.flexWrap = "wrap";
-    btns.style.justifyContent = "flex-end";
+    const title = document.createElement("div");
+    title.className = "historyTitle";
+    title.textContent = "Compra guardada";
 
-    const bRestore = document.createElement("button");
-    bRestore.className = "btn add";
-    bRestore.type = "button";
-    bRestore.textContent = "Restaurar";
-    bRestore.addEventListener("click", () => {
-      closeHistoryModal();
-      restorePurchase(h.ts);
+    const numbers = document.createElement("div");
+    numbers.className = "historyNumbers";
+
+    const total = document.createElement("div");
+    total.className = "historyTotal";
+    total.textContent = euro(Number(h.total) || 0);
+
+    const count = document.createElement("div");
+    count.className = "historyCount";
+    count.textContent = `${h.count} productos`;
+
+    numbers.appendChild(total);
+    numbers.appendChild(count);
+
+    const date = document.createElement("div");
+    date.className = "historyDate";
+    date.textContent = formatDate(h.ts);
+
+    main.appendChild(title);
+    main.appendChild(numbers);
+    main.appendChild(date);
+
+    const actions = document.createElement("div");
+    actions.className = "historyActions";
+
+    const btnView = document.createElement("button");
+    btnView.type = "button";
+    btnView.className = "btn small view";
+    btnView.textContent = "Ver detalle";
+
+    const btnDel = document.createElement("button");
+    btnDel.type = "button";
+    btnDel.className = "btn small delete";
+    btnDel.textContent = "Borrar";
+    btnDel.addEventListener("click", () => deleteHistoryItem(h.ts));
+
+    actions.appendChild(btnView);
+    actions.appendChild(btnDel);
+
+    top.appendChild(main);
+    top.appendChild(actions);
+
+    const details = document.createElement("div");
+    details.className = "historyDetails";
+
+    const items = Array.isArray(h.items) ? h.items : [];
+    if (items.length === 0) {
+      details.innerHTML = `<div class="hint">Sin detalle de productos.</div>`;
+    } else {
+      items.forEach(it => {
+        const row = document.createElement("div");
+        row.className = "historyRow";
+
+        const a = document.createElement("div");
+        a.className = "historyRowName";
+        a.textContent = `${it.qty}× ${it.name}`;
+
+        const b = document.createElement("div");
+        b.className = "historyRowPrice";
+        b.textContent = (it.subtotal == null) ? "—" : euro(Number(it.subtotal));
+
+        row.appendChild(a);
+        row.appendChild(b);
+        details.appendChild(row);
+      });
+    }
+
+    btnView.addEventListener("click", () => {
+      const on = details.classList.toggle("on");
+      btnView.textContent = on ? "Ocultar" : "Ver detalle";
     });
 
-    const bDel = document.createElement("button");
-    bDel.className = "btn reset";
-    bDel.type = "button";
-    bDel.textContent = "Borrar";
-    bDel.addEventListener("click", () => deleteHistoryItem(h.ts));
+    card.appendChild(top);
+    card.appendChild(details);
 
-    btns.appendChild(bRestore);
-    btns.appendChild(bDel);
-
-    top.appendChild(left);
-    top.appendChild(btns);
-
-    const det = document.createElement("details");
-    det.style.marginTop = "10px";
-
-    const sum = document.createElement("summary");
-    sum.textContent = "Ver detalle";
-    sum.style.cursor = "pointer";
-    sum.style.color = "#111";
-    sum.style.fontWeight = "900";
-    det.appendChild(sum);
-
-    const list = document.createElement("div");
-    list.style.marginTop = "10px";
-    list.style.display = "grid";
-    list.style.gap = "6px";
-
-    (h.items || []).forEach(it => {
-      const row = document.createElement("div");
-      row.style.display = "flex";
-      row.style.justifyContent = "space-between";
-      row.style.gap = "10px";
-      row.style.fontSize = "14px";
-
-      const a = document.createElement("div");
-      a.style.fontWeight = "900";
-      a.textContent = `${it.qty}× ${it.name}`;
-
-      const b = document.createElement("div");
-      b.style.fontWeight = "1000";
-      b.textContent = (it.subtotal == null) ? "—" : euro(Number(it.subtotal));
-
-      row.appendChild(a);
-      row.appendChild(b);
-      list.appendChild(row);
-    });
-
-    det.appendChild(list);
-
-    wrap.appendChild(top);
-    wrap.appendChild(det);
-
-    el.historyList.appendChild(wrap);
+    el.historyList.appendChild(card);
   });
 }
+
+// ---------- Stats ----------
+// (OPCIONAL) Si quieres que Stats use estas clases y no estilos inline,
+// sustituye tu renderStats() por este:
+
+function renderStats() {
+  if (!el.statsBody) return;
+
+  const now = Date.now();
+  const last30From = now - 30 * 24 * 60 * 60 * 1000;
+  const monthFrom = startOfMonthTs();
+
+  const last30 = sumHistoryBetween(last30From, now);
+  const month = sumHistoryBetween(monthFrom, now);
+
+  const box = (title, s) => `
+    <div class="statsCard">
+      <div class="statsCardTitle">${title}</div>
+      <div class="statsRow">
+        <div class="statsKpi">
+          <div class="statsKpiLabel">Total gastado</div>
+          <div class="statsKpiValue">${euro(s.total)}</div>
+        </div>
+        <div class="statsKpi">
+          <div class="statsKpiLabel">Compras</div>
+          <div class="statsKpiValue">${s.compras}</div>
+        </div>
+        <div class="statsKpi">
+          <div class="statsKpiLabel">Productos (total)</div>
+          <div class="statsKpiValue">${s.productos}</div>
+        </div>
+        <div class="statsKpi">
+          <div class="statsKpiLabel">Media por compra</div>
+          <div class="statsKpiValue">${euro(s.media)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  el.statsBody.innerHTML = `
+    <div class="statsGrid">
+      ${box("Últimos 30 días", last30)}
+      ${box("Mes actual", month)}
+    </div>
+  `;
+}
+
 
 // ---------- PDF (simple) ----------
 function buildPrintHtml() {
@@ -546,7 +610,7 @@ function printPdf() {
   w.document.close();
 }
 
-// ---------- Render ----------
+// ---------- Render helpers ----------
 function renderSectionTitle(text) {
   const li = document.createElement("li");
   li.className = "sectionTitle";
@@ -566,28 +630,21 @@ function renderItem(p, { superMode }) {
 
   const li = document.createElement("li");
   li.className = "item" + (done ? " done" : "");
-  if (checked && mode === "catalog") {
-  li.classList.add("selected");
-  }
 
+  if (!superMode && checked) li.classList.add("selected");
 
   const left = document.createElement("div");
   left.className = "left";
 
-  // checkbox: en super = comprado; en catalogo = seleccionar compra
   const cb = document.createElement("input");
   cb.type = "checkbox";
   cb.className = "cb";
-
-  if (superMode) cb.checked = done;
-  else cb.checked = checked;
+  cb.checked = superMode ? done : checked;
 
   cb.addEventListener("change", () => {
-    if (superMode) {
-      setDone(id, cb.checked);
-    } else {
-      setChecked(id, cb.checked);
-    }
+    if (superMode) setDone(id, cb.checked);
+    else setChecked(id, cb.checked);
+
     saveState();
     render();
   });
@@ -599,8 +656,8 @@ function renderItem(p, { superMode }) {
   name.className = "name";
   name.textContent = p.name;
 
+  // En súper: tachado solo si "done". En catálogo: NO tachamos (solo .selected de fondo)
   if (superMode && done) name.classList.add("checked");
-  if (!superMode && checked) name.classList.add("checked");
 
   const meta = document.createElement("div");
   meta.className = "meta";
@@ -615,6 +672,7 @@ function renderItem(p, { superMode }) {
   const right = document.createElement("div");
   right.className = "right";
 
+  // Precio: oculto en súper por CSS, pero lo dejamos aquí para catálogo
   const priceTag = document.createElement("button");
   priceTag.type = "button";
   priceTag.className = "priceTag" + (!hasPrice ? " missing" : "");
@@ -623,7 +681,6 @@ function renderItem(p, { superMode }) {
   priceTag.addEventListener("click", (ev) => { ev.stopPropagation(); openPriceModal(p); });
   right.appendChild(priceTag);
 
-  // qty controls: en super siempre; en catalogo solo si marcado
   const showQtyControls = superMode || (mode === "catalog" && checked);
   if (showQtyControls) {
     const controls = document.createElement("div");
@@ -676,7 +733,6 @@ function renderItem(p, { superMode }) {
       subtotal.textContent = hasPrice ? euro(price * getQty(id)) : "—";
       right.appendChild(subtotal);
 
-      // botón quitar de la compra
       const btnRemove = document.createElement("button");
       btnRemove.type = "button";
       btnRemove.className = "btnTiny danger";
@@ -690,7 +746,8 @@ function renderItem(p, { superMode }) {
       });
       right.appendChild(btnRemove);
 
-      meta.textContent = `Unidades: ${getQty(id)}` + (done ? " · Comprado" : " · Pendiente");
+      // meta en súper no lo quieres (CSS lo oculta), así que da igual
+      meta.textContent = `Unidades: ${getQty(id)}`;
     } else {
       meta.textContent = checked ? `Unidades: ${getQty(id)}` : "En catálogo";
     }
@@ -699,16 +756,13 @@ function renderItem(p, { superMode }) {
   li.appendChild(left);
   li.appendChild(right);
 
-  // click fila: en catálogo alterna selección; en súper alterna comprado
   li.addEventListener("click", (ev) => {
     const tag = (ev.target?.tagName || "").toUpperCase();
     if (tag === "BUTTON" || tag === "INPUT" || tag === "A" || tag === "SUMMARY") return;
 
-    if (superMode) {
-      setDone(id, !isDone(id));
-    } else {
-      setChecked(id, !isChecked(id));
-    }
+    if (superMode) setDone(id, !isDone(id));
+    else setChecked(id, !isChecked(id));
+
     saveState();
     render();
   });
@@ -716,16 +770,13 @@ function renderItem(p, { superMode }) {
   return li;
 }
 
-// ✅ render (editado para “modo súper limpio”: sin búsqueda en súper y sin totalBox)
 function render() {
   if (!el.list) return;
 
   updateHeader();
 
-  // ✅ en modo súper NO aplicamos búsqueda (porque la ocultamos)
   const q = (mode === "super") ? "" : norm(el.search?.value || "");
 
-  // catálogo = todos, súper = solo seleccionados
   let items = catalog;
   if (mode === "super") items = items.filter(p => isChecked(String(p.id)));
   if (q) items = items.filter(p => matchesSearch(p, q));
@@ -733,35 +784,23 @@ function render() {
   el.list.innerHTML = "";
 
   if (mode === "super") {
-    const pending = items.filter(p => !isDone(String(p.id)));
-    const bought = items.filter(p => isDone(String(p.id)));
-
-    el.list.appendChild(renderSectionTitle(`Pendiente (${pending.length})`));
-    if (pending.length === 0) {
+    // Súper: sin textos de “Nada pendiente” y sin secciones si no quieres (dejamos 1 sola lista)
+    if (items.length === 0) {
       const li = document.createElement("li");
       li.className = "item";
-      li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada pendiente</div><div class="meta">Marca algo en catálogo o restaura una compra</div></div></div>`;
+      li.innerHTML = `<div class="left"><div class="text"><div class="name">No hay productos</div></div></div>`;
       el.list.appendChild(li);
-    } else {
-      pending.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
+      return;
     }
 
-    if (!hideBought) {
-      el.list.appendChild(renderSectionTitle(`Comprado (${bought.length})`));
-      if (bought.length === 0) {
-        const li = document.createElement("li");
-        li.className = "item";
-        li.innerHTML = `<div class="left"><div class="text"><div class="name">Nada comprado aún</div><div class="meta">Marca los productos conforme los vayas metiendo al carro</div></div></div>`;
-        el.list.appendChild(li);
-      } else {
-        bought.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
-      }
-    }
+    // Si quieres ocultar comprados, filtramos
+    const visible = hideBought ? items.filter(p => !isDone(String(p.id))) : items;
 
+    visible.forEach(p => el.list.appendChild(renderItem(p, { superMode: true })));
     return;
   }
 
-  // modo catálogo
+  // Catálogo
   if (items.length === 0) {
     const li = document.createElement("li");
     li.className = "item";
@@ -772,7 +811,6 @@ function render() {
 
   items.forEach(p => el.list.appendChild(renderItem(p, { superMode: false })));
 }
-
 
 // ---------- Load catalog ----------
 async function loadCatalog() {
@@ -811,6 +849,9 @@ function wireUI() {
 
     if (t && t.id === "tabCatalogo") { e.preventDefault(); setMode("catalog"); return; }
     if (t && t.id === "tabSuper") { e.preventDefault(); setMode("super"); return; }
+
+    if (t && t.id === "btnStats") { e.preventDefault(); openStatsModal(); return; }
+    if (t && t.id === "btnCloseStats") { e.preventDefault(); closeStatsModal(); return; }
 
     if (t && t.id === "btnReset") {
       e.preventDefault();
@@ -892,6 +933,7 @@ function wireUI() {
   el.addModal?.addEventListener("click", (e) => { if (e.target === el.addModal) closeAddModal(); });
   el.priceModal?.addEventListener("click", (e) => { if (e.target === el.priceModal) closePriceModal(); });
   el.historyModal?.addEventListener("click", (e) => { if (e.target === el.historyModal) closeHistoryModal(); });
+  el.statsModal?.addEventListener("click", (e) => { if (e.target === el.statsModal) closeStatsModal(); });
 }
 
 // ---------- Init ----------
