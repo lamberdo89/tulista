@@ -2,88 +2,48 @@
   --bg:#f6f7f9;
   --card:#fff;
   --text:#111;
-  --muted:#666;
+  --muted:#6b7280;
   --line:#e6e8ee;
   --pill:#eef0f5;
 }
 
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
-.app{max-width:720px;margin:0 auto;min-height:100vh;padding-bottom:24px}
-.topbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:16px 16px 10px;border-bottom:1px solid var(--line)}
-.title h1{margin:0;font-size:18px}
-.badge{margin-top:6px;font-size:12px;color:var(--muted)}
-.tabs{display:flex;gap:8px;margin-top:10px}
-.tab{flex:1;border:1px solid var(--line);background:var(--pill);padding:10px;border-radius:12px;font-weight:600}
-.tab.on{background:var(--text);color:#fff;border-color:var(--text)}
-.actionsBar{display:flex;gap:8px;margin-top:10px}
-.btn{border:1px solid var(--line);background:#fff;padding:10px 12px;border-radius:12px;font-weight:700}
-.btn.primary{background:var(--text);color:#fff;border-color:var(--text)}
-.search{width:100%;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:16px}
-.content{padding:12px 16px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.list{list-style:none;margin:0;padding:0}
-.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-top:1px solid #eef0f5}
-.item:first-child{border-top:0}
-.left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
-.name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.name.checked{opacity:.6;text-decoration:line-through}
-.meta{font-size:12px;color:var(--muted)}
-.priceTag{font-weight:900;font-size:18px;white-space:nowrap}
-.priceTag.missing{opacity:.35}
-.totalBig{background:var(--text);color:#fff;border-radius:16px;padding:12px;margin-bottom:12px}
-.totalBig .label{font-size:12px;opacity:.8}
-.totalBig .value{font-size:24px;font-weight:900;margin-top:2px}
 
-.modalBack{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:50}
-.modal{width:min(720px,100%);background:#fff;border-radius:18px;padding:14px;border:1px solid var(--line)}
-.modalHeader{display:flex;justify-content:space-between;align-items:center;font-weight:900}
-.twoCols{display:flex;gap:8px}
-.twoCols .search{margin-top:0}
-
-.qtyControls{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  margin-top:8px;
-  justify-content:flex-end;
-}
-.qtyBtn{
-  width:34px;
-  height:34px;
-  border-radius:10px;
-  border:1px solid #dfe3ea;
-  background:#fff;
-  font-weight:800;
-}
-.qtyVal{
-  min-width:28px;
-  text-align:center;
-  font-weight:700;
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* assets/app.css (añade esto AL FINAL, o sustituye estilos antiguos de botones si chocan) */
+.app{
+  max-width:720px;
+  margin:0 auto;
+  min-height:100vh;
+  padding-bottom:24px;
+}
 
 /* ===== Topbar ===== */
 .topbar{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e6e8ee;
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  padding:16px 16px 10px;
+  border-bottom:1px solid var(--line);
 }
 
 .title h1{
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: .2px;
+  margin:0;
+  font-size:18px;
+  letter-spacing:.2px;
 }
 
 .badge{
-  margin-top: 6px;
-  font-size: 12px;
-  color:#6b7280;
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
 }
 
 /* ===== Tabs ===== */
@@ -95,12 +55,13 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
 
 .tab{
   flex:1;
-  border:1px solid #e6e8ee;
-  background:#f6f7f9;
+  border:1px solid var(--line);
+  background:var(--pill);
   padding:10px 12px;
   border-radius:12px;
   font-weight:600;
 }
+
 .tab.on{
   background:#111;
   color:#fff;
@@ -115,7 +76,7 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
 }
 
 .btn{
-  border:1px solid #e6e8ee;
+  border:1px solid var(--line);
   background:#fff;
   color:#111;
   padding:10px 12px;
@@ -124,75 +85,91 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   cursor:pointer;
 }
 
-.btn:active{ transform: translateY(1px); }
+.btn:active{ transform:translateY(1px); }
 
-.btn.icon{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  flex:1;
-}
-
-/* Botón Reset (rojo suave) */
+/* Reset */
 .btn.reset{
   background:#fff5f5;
   border-color:#ffd5d5;
   color:#b42318;
 }
 
-/* Botón Añadir (azul) */
+/* Añadir */
 .btn.add{
   background:#eff6ff;
   border-color:#cfe2ff;
   color:#1d4ed8;
 }
 
-/* Botón Historial (morado) */
+/* Historial */
 .btn.history{
   background:#f5f3ff;
   border-color:#ddd6fe;
   color:#6d28d9;
 }
 
-/* ===== Total box ===== */
+/* ===== Search ===== */
+.search{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  font-size:16px;
+  outline:none;
+}
+
+/* ===== Content ===== */
+.content{
+  padding:12px 16px 0;
+}
+
+/* ===== Total ===== */
 .totalBig{
-  border:1px solid #e6e8ee;
+  border:1px solid var(--line);
   background:#fff;
   border-radius:16px;
   padding:14px;
+  margin-bottom:12px;
   display:flex;
   justify-content:space-between;
   align-items:flex-end;
-  margin-bottom:12px;
-}
-.totalBig .label{
-  color:#6b7280;
-  font-size:12px;
-  font-weight:700;
-}
-.totalBig .value{
-  font-size:20px;
-  font-weight:900;
 }
 
-/* ===== List items ===== */
+.totalBig .label{
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+}
+
+.totalBig .value{
+  font-size:22px;
+  font-weight:900;
+  color:#111;
+}
+
+/* ===== Card & List ===== */
 .card{
-  background:#fff;
-  border:1px solid #e6e8ee;
+  background:var(--card);
+  border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
 }
 
-.list{ list-style:none; padding:0; margin:0; }
+.list{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
 
 .item{
   display:flex;
   justify-content:space-between;
   gap:12px;
-  padding:12px 12px;
+  padding:12px;
   border-top:1px solid #eef0f5;
 }
+
 .item:first-child{ border-top:0; }
 
 .left{
@@ -203,20 +180,26 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   flex:1;
 }
 
-.cb{ width:22px; height:22px; }
+.cb{
+  width:22px;
+  height:22px;
+}
 
-.text{ min-width:0; }
 .name{
   font-weight:900;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.name.checked{ opacity:.65; text-decoration:line-through; }
+
+.name.checked{
+  opacity:.65;
+  text-decoration:line-through;
+}
 
 .meta{
-  color:#6b7280;
   font-size:12px;
+  color:var(--muted);
   margin-top:2px;
 }
 
@@ -226,8 +209,9 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   gap:10px;
 }
 
+/* Precio */
 .priceTag{
-  border:1px solid #e6e8ee;
+  border:1px solid var(--line);
   background:#f6f7f9;
   padding:8px 10px;
   border-radius:14px;
@@ -236,19 +220,18 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   text-align:right;
 }
 
-.priceTag.missing{
-  opacity:.6;
-}
+.priceTag.missing{ opacity:.6; }
 
-/* ===== Qty controls ===== */
+/* ===== Cantidades ===== */
 .qtyControls{
   display:flex;
   align-items:center;
-  border:1px solid #e6e8ee;
+  border:1px solid var(--line);
   border-radius:14px;
   overflow:hidden;
   background:#fff;
 }
+
 .qtyBtn{
   border:0;
   background:#f6f7f9;
@@ -256,6 +239,7 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   font-weight:900;
   cursor:pointer;
 }
+
 .qtyVal{
   padding:8px 10px;
   min-width:26px;
@@ -280,14 +264,16 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   padding:16px;
   z-index:30;
 }
+
 .modal{
   width:100%;
   max-width:520px;
   background:#fff;
   border-radius:18px;
-  border:1px solid #e6e8ee;
+  border:1px solid var(--line);
   padding:14px;
 }
+
 .modalHeader{
   display:flex;
   justify-content:space-between;
@@ -295,22 +281,15 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;backgrou
   gap:10px;
   font-weight:900;
 }
-.search{
-  width:100%;
-  border:1px solid #e6e8ee;
-  background:#fff;
-  padding:12px 12px;
-  border-radius:14px;
-  outline:none;
-}
+
 .twoCols{
   display:grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns:1fr 120px;
   gap:10px;
 }
-@media (max-width: 420px){
-  .twoCols{ grid-template-columns: 1fr; }
-  .actionsBar{ flex-direction: column; }
-  .btn.icon{ width:100%; }
+
+@media (max-width:420px){
+  .twoCols{ grid-template-columns:1fr; }
+  .actionsBar{ flex-direction:column; }
   .right{ gap:8px; }
 }

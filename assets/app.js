@@ -331,7 +331,19 @@ function renderHistory() {
 
   const history = loadHistory();
   if (history.length === 0) {
-    el.historyList.innerHTML = `<div class="hint" style="margin-top:12px;color:#666;font-size:12px">No hay compras guardadas aún.</div>`;
+    el.historyList.innerHTML = `
+      <div style="
+        border:1px solid #e6e8ee;
+        background:#fff;
+        border-radius:16px;
+        padding:14px;
+        color:#6b7280;
+        font-size:13px;
+        font-weight:700;
+      ">
+        No hay compras guardadas aún.
+      </div>
+    `;
     return;
   }
 
@@ -340,23 +352,65 @@ function renderHistory() {
   history.forEach(h => {
     const wrap = document.createElement("div");
     wrap.style.border = "1px solid #e6e8ee";
-    wrap.style.borderRadius = "12px";
-    wrap.style.padding = "12px";
-    wrap.style.marginBottom = "10px";
+    wrap.style.borderRadius = "16px";
+    wrap.style.padding = "14px";
+    wrap.style.marginBottom = "12px";
     wrap.style.background = "#fff";
 
-    const top = document.createElement("div");
-    top.style.display = "flex";
-    top.style.justifyContent = "space-between";
-    top.style.gap = "10px";
-    top.style.alignItems = "center";
+    // Header: TOTAL grande + chips
+    const header = document.createElement("div");
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.gap = "12px";
+    header.style.alignItems = "flex-start";
 
     const left = document.createElement("div");
-    left.innerHTML = `
-      <div style="font-weight:700">${formatDate(h.ts)}</div>
-      <div style="color:#666;font-size:12px">Productos: ${h.count} · Total: ${euro(Number(h.total) || 0)}</div>
-    `;
+    left.style.minWidth = "0";
+    left.style.flex = "1";
 
+    // TOTAL (principal)
+    const total = document.createElement("div");
+    total.textContent = euro(Number(h.total) || 0);
+    total.style.fontSize = "22px";
+    total.style.fontWeight = "900";
+    total.style.color = "#111";
+    total.style.lineHeight = "1.05";
+
+    // Subrow: chips (productos + fecha secundaria)
+    const sub = document.createElement("div");
+    sub.style.marginTop = "8px";
+    sub.style.display = "flex";
+    sub.style.flexWrap = "wrap";
+    sub.style.gap = "8px";
+    sub.style.alignItems = "center";
+
+    const pillItems = document.createElement("span");
+    pillItems.textContent = `${h.count} productos`;
+    pillItems.style.fontSize = "12px";
+    pillItems.style.fontWeight = "900";
+    pillItems.style.color = "#111";
+    pillItems.style.background = "#f6f7f9";
+    pillItems.style.border = "1px solid #e6e8ee";
+    pillItems.style.padding = "6px 10px";
+    pillItems.style.borderRadius = "999px";
+
+    const pillDate = document.createElement("span");
+    pillDate.textContent = formatDate(h.ts);
+    pillDate.style.fontSize = "12px";
+    pillDate.style.fontWeight = "800";
+    pillDate.style.color = "#6b7280";
+    pillDate.style.background = "#fff";
+    pillDate.style.border = "1px solid #e6e8ee";
+    pillDate.style.padding = "6px 10px";
+    pillDate.style.borderRadius = "999px";
+
+    sub.appendChild(pillItems);
+    sub.appendChild(pillDate);
+
+    left.appendChild(total);
+    left.appendChild(sub);
+
+    // Buttons
     const btns = document.createElement("div");
     btns.style.display = "flex";
     btns.style.gap = "8px";
@@ -364,66 +418,123 @@ function renderHistory() {
     btns.style.justifyContent = "flex-end";
 
     const bRestore = document.createElement("button");
-    bRestore.className = "btn primary";
+    bRestore.className = "btn add";
     bRestore.type = "button";
-    bRestore.textContent = "Restaurar";
+    bRestore.textContent = "↩ Restaurar";
     bRestore.addEventListener("click", () => {
       closeHistoryModal();
       restorePurchase(h.ts);
     });
 
     const bDel = document.createElement("button");
-    bDel.className = "btn";
+    bDel.className = "btn reset";
     bDel.type = "button";
-    bDel.textContent = "Borrar";
+    bDel.textContent = "🗑 Borrar";
     bDel.addEventListener("click", () => deleteHistoryItem(h.ts));
 
     btns.appendChild(bRestore);
     btns.appendChild(bDel);
 
-    top.appendChild(left);
-    top.appendChild(btns);
+    header.appendChild(left);
+    header.appendChild(btns);
 
+    const divider = document.createElement("div");
+    divider.style.height = "1px";
+    divider.style.background = "#eef0f5";
+    divider.style.margin = "12px 0";
+
+    // Details
     const det = document.createElement("details");
-    det.style.marginTop = "10px";
+    det.style.border = "1px solid #e6e8ee";
+    det.style.borderRadius = "14px";
+    det.style.background = "#f6f7f9";
+    det.style.padding = "10px 12px";
+
     const sum = document.createElement("summary");
-    sum.textContent = "Ver detalle";
     sum.style.cursor = "pointer";
+    sum.style.fontWeight = "900";
     sum.style.color = "#111";
+    sum.style.listStyle = "none";
+    sum.style.outline = "none";
+    sum.style.display = "flex";
+    sum.style.alignItems = "center";
+    sum.style.justifyContent = "space-between";
+
+    const sumLeft = document.createElement("span");
+    sumLeft.textContent = "Ver detalle";
+
+    const chevron = document.createElement("span");
+    chevron.textContent = "▾";
+    chevron.style.fontWeight = "900";
+    chevron.style.color = "#6b7280";
+
+    sum.appendChild(sumLeft);
+    sum.appendChild(chevron);
+
     det.appendChild(sum);
 
+    det.addEventListener("toggle", () => {
+      chevron.textContent = det.open ? "▴" : "▾";
+    });
+
     const list = document.createElement("div");
-    list.style.marginTop = "8px";
+    list.style.marginTop = "10px";
     list.style.display = "grid";
-    list.style.gap = "6px";
+    list.style.gap = "8px";
 
     (h.items || []).forEach(it => {
       const row = document.createElement("div");
       row.style.display = "flex";
       row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
       row.style.gap = "10px";
-      row.style.fontSize = "14px";
+      row.style.padding = "10px 10px";
+      row.style.borderRadius = "12px";
+      row.style.background = "#fff";
+      row.style.border = "1px solid #e6e8ee";
 
       const a = document.createElement("div");
-      a.textContent = `${it.qty}× ${it.name}`;
+      a.style.minWidth = "0";
+
+      const n = document.createElement("div");
+      n.textContent = it.name;
+      n.style.fontWeight = "900";
+      n.style.whiteSpace = "nowrap";
+      n.style.overflow = "hidden";
+      n.style.textOverflow = "ellipsis";
+
+      const m = document.createElement("div");
+      m.textContent = `${it.qty}× ${it.price == null ? "—" : euro(Number(it.price))}`;
+      m.style.fontSize = "12px";
+      m.style.fontWeight = "800";
+      m.style.color = "#6b7280";
+      m.style.marginTop = "2px";
+
+      a.appendChild(n);
+      a.appendChild(m);
 
       const b = document.createElement("div");
-      b.style.fontWeight = "700";
+      b.style.fontWeight = "900";
+      b.style.textAlign = "right";
+      b.style.minWidth = "88px";
       b.textContent = (it.subtotal == null) ? "—" : euro(Number(it.subtotal));
 
       row.appendChild(a);
       row.appendChild(b);
+
       list.appendChild(row);
     });
 
     det.appendChild(list);
 
-    wrap.appendChild(top);
+    wrap.appendChild(header);
+    wrap.appendChild(divider);
     wrap.appendChild(det);
 
     el.historyList.appendChild(wrap);
   });
 }
+
 
 // ---------- Render (fila clicable + qty en catálogo cuando está marcado) ----------
 function render() {
