@@ -1,0 +1,687 @@
+[
+  {
+    "id": 1,
+    "name": "Agua",
+    "price": 0.29
+  },
+  {
+    "id": 2,
+    "name": "Aceitunas",
+    "price": null
+  },
+  {
+    "id": 3,
+    "name": "Arroz basmati",
+    "price": 2.2
+  },
+  {
+    "id": 4,
+    "name": "Aguacate",
+    "price": null
+  },
+  {
+    "id": 5,
+    "name": "Almendras",
+    "price": 2.9
+  },
+  {
+    "id": 6,
+    "name": "Ambientador",
+    "price": 1.8
+  },
+  {
+    "id": 7,
+    "name": "Atún",
+    "price": 4.9
+  },
+  {
+    "id": 8,
+    "name": "Barritas",
+    "price": null
+  },
+  {
+    "id": 9,
+    "name": "Bagels",
+    "price": 1.42
+  },
+  {
+    "id": 10,
+    "name": "Berenjena",
+    "price": null
+  },
+  {
+    "id": 11,
+    "name": "Bolsas de basura",
+    "price": 1.65
+  },
+  {
+    "id": 12,
+    "name": "Boniato",
+    "price": null
+  },
+  {
+    "id": 13,
+    "name": "Burrata",
+    "price": 2.3
+  },
+  {
+    "id": 14,
+    "name": "Cacahuete en polvo",
+    "price": 2.75
+  },
+  {
+    "id": 15,
+    "name": "Café",
+    "price": null
+  },
+  {
+    "id": 16,
+    "name": "Calabacín",
+    "price": null
+  },
+  {
+    "id": 17,
+    "name": "Caldo de pollo",
+    "price": 0.8
+  },
+  {
+    "id": 18,
+    "name": "Champú",
+    "price": null
+  },
+  {
+    "id": 19,
+    "name": "Chicles",
+    "price": 1.95
+  },
+  {
+    "id": 20,
+    "name": "Tomates cherry",
+    "price": 2.0
+  },
+  {
+    "id": 21,
+    "name": "Chuches",
+    "price": null
+  },
+  {
+    "id": 22,
+    "name": "Chocolate (tabletas)",
+    "price": 3.8
+  },
+  {
+    "id": 23,
+    "name": "Coca-Cola Zero",
+    "price": 0.35
+  },
+  {
+    "id": 24,
+    "name": "Crackers",
+    "price": 1.84
+  },
+  {
+    "id": 25,
+    "name": "Crema de verduras",
+    "price": 1.0
+  },
+  {
+    "id": 26,
+    "name": "Croissant",
+    "price": 0.55
+  },
+  {
+    "id": 27,
+    "name": "Curry",
+    "price": 1.1
+  },
+  {
+    "id": 28,
+    "name": "Desinfectante de manos",
+    "price": null
+  },
+  {
+    "id": 29,
+    "name": "Desodorante",
+    "price": null
+  },
+  {
+    "id": 30,
+    "name": "Edamame",
+    "price": 1.73
+  },
+  {
+    "id": 31,
+    "name": "Donut de chocolate",
+    "price": 1.55
+  },
+  {
+    "id": 32,
+    "name": "Eneldo",
+    "price": 1.85
+  },
+  {
+    "id": 33,
+    "name": "Enjuague bucal",
+    "price": null
+  },
+  {
+    "id": 34,
+    "name": "Esponja",
+    "price": 1.3
+  },
+  {
+    "id": 35,
+    "name": "Fajitas",
+    "price": null
+  },
+  {
+    "id": 36,
+    "name": "Fideos instantáneos",
+    "price": 0.9
+  },
+  {
+    "id": 37,
+    "name": "Filetes empanados",
+    "price": 3.9
+  },
+  {
+    "id": 38,
+    "name": "Filetes de lomo",
+    "price": 6.8
+  },
+  {
+    "id": 39,
+    "name": "Filetes de pollo",
+    "price": 4.76
+  },
+  {
+    "id": 40,
+    "name": "Friegasuelos",
+    "price": 0.95
+  },
+  {
+    "id": 41,
+    "name": "Fritada",
+    "price": 1.3
+  },
+  {
+    "id": 42,
+    "name": "Fruta",
+    "price": null
+  },
+  {
+    "id": 43,
+    "name": "Galletas integrales",
+    "price": null
+  },
+  {
+    "id": 44,
+    "name": "Galletas",
+    "price": null
+  },
+  {
+    "id": 45,
+    "name": "Galletas de Los Simpson",
+    "price": 1.95
+  },
+  {
+    "id": 46,
+    "name": "Garbanzos",
+    "price": 0.75
+  },
+  {
+    "id": 47,
+    "name": "Gazpacho",
+    "price": 2.85
+  },
+  {
+    "id": 48,
+    "name": "Gel",
+    "price": 1.6
+  },
+  {
+    "id": 49,
+    "name": "Gotas de chocolate",
+    "price": 2.75
+  },
+  {
+    "id": 50,
+    "name": "Guacamole",
+    "price": 1.8
+  },
+  {
+    "id": 51,
+    "name": "Gyozas",
+    "price": null
+  },
+  {
+    "id": 52,
+    "name": "Helados de mango",
+    "price": null
+  },
+  {
+    "id": 53,
+    "name": "Helado cookie dough",
+    "price": 3.35
+  },
+  {
+    "id": 54,
+    "name": "Hojaldre",
+    "price": 2.4
+  },
+  {
+    "id": 55,
+    "name": "Huevos",
+    "price": null
+  },
+  {
+    "id": 56,
+    "name": "Hummus",
+    "price": null
+  },
+  {
+    "id": 57,
+    "name": "Insecticida",
+    "price": 2.25
+  },
+  {
+    "id": 58,
+    "name": "Jamón fiambre",
+    "price": 4.1
+  },
+  {
+    "id": 59,
+    "name": "Jamón de york",
+    "price": 2.85
+  },
+  {
+    "id": 60,
+    "name": "Jengibre",
+    "price": null
+  },
+  {
+    "id": 61,
+    "name": "Judías verdes",
+    "price": null
+  },
+  {
+    "id": 62,
+    "name": "Laca",
+    "price": 2.0
+  },
+  {
+    "id": 63,
+    "name": "Leche",
+    "price": 0.96
+  },
+  {
+    "id": 64,
+    "name": "Lentejas",
+    "price": 0.9
+  },
+  {
+    "id": 65,
+    "name": "Limones",
+    "price": null
+  },
+  {
+    "id": 66,
+    "name": "Limpia cristales",
+    "price": null
+  },
+  {
+    "id": 67,
+    "name": "Limpia salpicadero",
+    "price": null
+  },
+  {
+    "id": 68,
+    "name": "Maicena",
+    "price": null
+  },
+  {
+    "id": 69,
+    "name": "Maíz",
+    "price": null
+  },
+  {
+    "id": 70,
+    "name": "Mayonesa light",
+    "price": 1.5
+  },
+  {
+    "id": 71,
+    "name": "Macarrones",
+    "price": 1.15
+  },
+  {
+    "id": 72,
+    "name": "Melón",
+    "price": null
+  },
+  {
+    "id": 73,
+    "name": "Monster",
+    "price": 1.0
+  },
+  {
+    "id": 74,
+    "name": "Mostaza",
+    "price": 1.35
+  },
+  {
+    "id": 75,
+    "name": "Mozzarella rallada",
+    "price": 1.65
+  },
+  {
+    "id": 76,
+    "name": "Nachos",
+    "price": 0.9
+  },
+  {
+    "id": 77,
+    "name": "Napolitana",
+    "price": null
+  },
+  {
+    "id": 78,
+    "name": "Nata",
+    "price": 1.85
+  },
+  {
+    "id": 79,
+    "name": "Nestea",
+    "price": 1.99
+  },
+  {
+    "id": 80,
+    "name": "Noodles",
+    "price": 1.45
+  },
+  {
+    "id": 81,
+    "name": "Ñoquis",
+    "price": 1.1
+  },
+  {
+    "id": 82,
+    "name": "Pan",
+    "price": null
+  },
+  {
+    "id": 83,
+    "name": "Pan de molde (Bimbo)",
+    "price": 1.18
+  },
+  {
+    "id": 84,
+    "name": "Pan para perritos",
+    "price": null
+  },
+  {
+    "id": 85,
+    "name": "Pañuelos",
+    "price": null
+  },
+  {
+    "id": 86,
+    "name": "Papel de aluminio",
+    "price": 2.2
+  },
+  {
+    "id": 87,
+    "name": "Papel higiénico",
+    "price": 4.5
+  },
+  {
+    "id": 88,
+    "name": "Paprika",
+    "price": null
+  },
+  {
+    "id": 89,
+    "name": "Pasta de dientes",
+    "price": null
+  },
+  {
+    "id": 90,
+    "name": "Patata cocida (bote)",
+    "price": null
+  },
+  {
+    "id": 91,
+    "name": "Pasta rellena",
+    "price": 1.9
+  },
+  {
+    "id": 92,
+    "name": "Patatas para airfryer",
+    "price": 1.8
+  },
+  {
+    "id": 93,
+    "name": "Patatas cono",
+    "price": 0.8
+  },
+  {
+    "id": 94,
+    "name": "Patatas light",
+    "price": 1.3
+  },
+  {
+    "id": 95,
+    "name": "Pastillas Avecrem",
+    "price": null
+  },
+  {
+    "id": 96,
+    "name": "Paté de atún",
+    "price": 2.0
+  },
+  {
+    "id": 97,
+    "name": "Pepino",
+    "price": null
+  },
+  {
+    "id": 98,
+    "name": "Pechuga de pollo",
+    "price": 4.76
+  },
+  {
+    "id": 99,
+    "name": "Pesto",
+    "price": 1.95
+  },
+  {
+    "id": 100,
+    "name": "Picatostes",
+    "price": 0.66
+  },
+  {
+    "id": 101,
+    "name": "Pimiento rojo",
+    "price": null
+  },
+  {
+    "id": 102,
+    "name": "Pizza cuatro quesos",
+    "price": 2.9
+  },
+  {
+    "id": 103,
+    "name": "Pizza jamón y queso (pequeña)",
+    "price": null
+  },
+  {
+    "id": 104,
+    "name": "Pizza jamón y queso",
+    "price": null
+  },
+  {
+    "id": 105,
+    "name": "Placa de hielo",
+    "price": null
+  },
+  {
+    "id": 106,
+    "name": "Philadelphia finas hierbas",
+    "price": 1.85
+  },
+  {
+    "id": 107,
+    "name": "Poloflash",
+    "price": null
+  },
+  {
+    "id": 108,
+    "name": "Puré de patata",
+    "price": 2.0
+  },
+  {
+    "id": 109,
+    "name": "Queso feta",
+    "price": 2.5
+  },
+  {
+    "id": 110,
+    "name": "Queso Grana Padano",
+    "price": 3.77
+  },
+  {
+    "id": 111,
+    "name": "Queso en láminas",
+    "price": 2.49
+  },
+  {
+    "id": 112,
+    "name": "Quinoa",
+    "price": null
+  },
+  {
+    "id": 113,
+    "name": "Queso roquefort",
+    "price": 2.45
+  },
+  {
+    "id": 114,
+    "name": "Rosca de lomo y bacon",
+    "price": null
+  },
+  {
+    "id": 115,
+    "name": "Rosca de jamón y queso",
+    "price": null
+  },
+  {
+    "id": 116,
+    "name": "Salchichas para perritos",
+    "price": null
+  },
+  {
+    "id": 117,
+    "name": "Surimi",
+    "price": null
+  },
+  {
+    "id": 118,
+    "name": "Salmorejo",
+    "price": 3.15
+  },
+  {
+    "id": 119,
+    "name": "Salvaslip",
+    "price": null
+  },
+  {
+    "id": 120,
+    "name": "Sazonador de carne",
+    "price": null
+  },
+  {
+    "id": 121,
+    "name": "Salsa para nachos",
+    "price": null
+  },
+  {
+    "id": 122,
+    "name": "Servilletas",
+    "price": null
+  },
+  {
+    "id": 123,
+    "name": "Suavizante",
+    "price": 1.8
+  },
+  {
+    "id": 124,
+    "name": "Tila",
+    "price": null
+  },
+  {
+    "id": 125,
+    "name": "Toalla para la cabeza",
+    "price": null
+  },
+  {
+    "id": 126,
+    "name": "Toallitas WC",
+    "price": null
+  },
+  {
+    "id": 127,
+    "name": "Tomate frito",
+    "price": 0.95
+  },
+  {
+    "id": 128,
+    "name": "Tomate triturado",
+    "price": null
+  },
+  {
+    "id": 129,
+    "name": "Tortilla de patatas",
+    "price": null
+  },
+  {
+    "id": 130,
+    "name": "Tranchetes",
+    "price": 2.35
+  },
+  {
+    "id": 131,
+    "name": "Vinagre de Módena",
+    "price": null
+  },
+  {
+    "id": 132,
+    "name": "Verduras congeladas",
+    "price": null
+  },
+  {
+    "id": 133,
+    "name": "Yogures griegos",
+    "price": null
+  },
+  {
+    "id": 134,
+    "name": "Zanahorias",
+    "price": null
+  },
+  {
+    "id": 135,
+    "name": "Zumo de naranja",
+    "price": 1.9
+  },
+  {
+    "id": 136,
+    "name": "Oreos",
+    "price": null
+  },
+  {
+    "id": 137,
+    "name": "masa de pizza",
+    "price": 1.8
+  }
+]

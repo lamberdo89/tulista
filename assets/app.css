@@ -1,0 +1,42 @@
+:root{
+  --bg:#f6f7f9;
+  --card:#fff;
+  --text:#111;
+  --muted:#666;
+  --line:#e6e8ee;
+  --pill:#eef0f5;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+.app{max-width:720px;margin:0 auto;min-height:100vh;padding-bottom:24px}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:16px 16px 10px;border-bottom:1px solid var(--line)}
+.title h1{margin:0;font-size:18px}
+.badge{margin-top:6px;font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:8px;margin-top:10px}
+.tab{flex:1;border:1px solid var(--line);background:var(--pill);padding:10px;border-radius:12px;font-weight:600}
+.tab.on{background:var(--text);color:#fff;border-color:var(--text)}
+.actionsBar{display:flex;gap:8px;margin-top:10px}
+.btn{border:1px solid var(--line);background:#fff;padding:10px 12px;border-radius:12px;font-weight:700}
+.btn.primary{background:var(--text);color:#fff;border-color:var(--text)}
+.search{width:100%;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:16px}
+.content{padding:12px 16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.list{list-style:none;margin:0;padding:0}
+.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-top:1px solid #eef0f5}
+.item:first-child{border-top:0}
+.left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name.checked{opacity:.6;text-decoration:line-through}
+.meta{font-size:12px;color:var(--muted)}
+.priceTag{font-weight:900;font-size:18px;white-space:nowrap}
+.priceTag.missing{opacity:.35}
+.totalBig{background:var(--text);color:#fff;border-radius:16px;padding:12px;margin-bottom:12px}
+.totalBig .label{font-size:12px;opacity:.8}
+.totalBig .value{font-size:24px;font-weight:900;margin-top:2px}
+
+.modalBack{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:50}
+.modal{width:min(720px,100%);background:#fff;border-radius:18px;padding:14px;border:1px solid var(--line)}
+.modalHeader{display:flex;justify-content:space-between;align-items:center;font-weight:900}
+.twoCols{display:flex;gap:8px}
+.twoCols .search{margin-top:0}
